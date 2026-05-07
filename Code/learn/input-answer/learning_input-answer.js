@@ -6,7 +6,6 @@ let lastCard = null;
 
 let extractor = null;
 let aiReady = false;
-let right = false;
 
 /* ---------------- AI INIT ---------------- */
 
@@ -47,7 +46,7 @@ function updateFinishedCardsBar() {
     `${finished} / ${total} geschafft`;
 }
 
-/* ---------------- NORMALISIERUNG ---------------- */
+/* ---------------- COSINE SIM ---------------- */
 
 function cosineSimilarity(a, b) {
   let dot = 0, normA = 0, normB = 0;
@@ -64,10 +63,7 @@ function cosineSimilarity(a, b) {
 /* ---------------- KI VERGLEICH ---------------- */
 
 async function compareAnswer(userAnswer, correctAnswer) {
-  if (!currentCard || !extractor || !aiReady) return;
-
-  const evalBox = document.getElementById("evaluation");
-  evalBox.style.display = "block";
+  if (!extractor || !aiReady) return false;
 
   const userVec = await extractor(userAnswer, {
     pooling: "mean",
@@ -83,15 +79,7 @@ async function compareAnswer(userAnswer, correctAnswer) {
 
   const THRESHOLD = 0.75;
 
-  if (sim >= THRESHOLD) {
-    evalBox.textContent = "Richtig! Antwort: " + currentCard.antwort;
-    evalBox.style.color = "green";
-    right = true;
-  } else {
-    evalBox.textContent = "Falsch! Richtige Antwort: " + currentCard.antwort;
-    evalBox.style.color = "red";
-    right = false;
-  }
+  return sim >= THRESHOLD;
 }
 
 /* ---------------- CONFIDENCE ---------------- */
@@ -101,7 +89,18 @@ document.querySelectorAll("[data-level]").forEach(btn => {
     const level = Number(btn.dataset.level);
     const userAnswer = document.getElementById("userAnswer").value;
 
-    await compareAnswer(userAnswer, currentCard.antwort);
+    const result = await compareAnswer(userAnswer, currentCard.antwort);
+
+    const evalBox = document.getElementById("evaluation");
+    evalBox.style.display = "block";
+
+    if (result) {
+      evalBox.textContent = "Richtig! Antwort: " + currentCard.antwort;
+      evalBox.style.color = "green";
+    } else {
+      evalBox.textContent = "Falsch! Richtige Antwort: " + currentCard.antwort;
+      evalBox.style.color = "red";
+    }
 
     const name = localStorage.getItem("currentSetName");
     const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
@@ -109,9 +108,9 @@ document.querySelectorAll("[data-level]").forEach(btn => {
     if (set) {
       const card = set.qa.find(q => q.frage === currentCard.frage);
 
-      if (card && right) {
+      if (card && result) {
         card.sicherheit = level;
-      } else if (card && !right) {
+      } else if (card && !result) {
         card.sicherheit = 5;
       }
 
@@ -193,11 +192,10 @@ function getWeightedCard(cards) {
 window.addEventListener("DOMContentLoaded", async () => {
   updateFinishedCardsBar();
 
+  document
+    .getElementById("nextBtnButton")
+    .addEventListener("click", nextCard);
+
   await initAI();
   nextCard();
-});
-
-window.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("nextBtnButton")
-    .addEventListener("click", nextCard);
 });
