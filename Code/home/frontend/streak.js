@@ -2,7 +2,7 @@ function updateStreak() {
     const dailyMinutes = Number(localStorage.getItem("dailyMinutes") || 0);
     if (dailyMinutes < 10) return; // Mindestzeit für Streak
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toLocaleDateString("sv-SE"); // ISO-Format: YYYY-MM-DD
 
     let savedDate = localStorage.getItem("dateStreak");
     let streak = Number(localStorage.getItem("streak") || 0);

@@ -2,8 +2,12 @@ let running = false;
 let lastUpdate = 0;
 let interval = null;
 
+function getToday() {
+  return new Date().toLocaleDateString("sv-SE");
+}
+
 function checkNewDay() {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getToday();
   const savedDate = localStorage.getItem("date");
 
   if (savedDate !== today) {
@@ -13,11 +17,11 @@ function checkNewDay() {
 }
 
 function tick() {
+  checkNewDay();
+
   const now = Date.now();
   const delta = (now - lastUpdate) / 1000 / 60;
   lastUpdate = now;
-
-  checkNewDay();
 
   let daily = Number(localStorage.getItem("dailyMinutes") || 0);
   let total = Number(localStorage.getItem("totalMinutes") || 0);
@@ -35,13 +39,16 @@ function start() {
   running = true;
   lastUpdate = Date.now();
 
-  interval = setInterval(tick, 200);
+  checkNewDay();
+
+  interval = setInterval(tick, 1000);
 }
 
 function stop() {
   if (!running) return;
 
   running = false;
+
   clearInterval(interval);
   interval = null;
 }
@@ -55,7 +62,7 @@ function updateState() {
   else stop();
 }
 
-/* AUTO START */
+/* INIT */
 checkNewDay();
 updateState();
 

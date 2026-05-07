@@ -1,8 +1,23 @@
+import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers";
+
 let currentCard = null;
 const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 let lastCard = null;
 
-nextCard();
+let extractor = null;
+let aiReady = false;
+let right = false;
+
+/* ---------------- AI INIT ---------------- */
+
+async function initAI() {
+  extractor = await pipeline(
+    "feature-extraction",
+    "Xenova/all-MiniLM-L6-v2"
+  );
+
+  aiReady = true;
+}
 
 /* ---------------- UI ---------------- */
 
@@ -23,8 +38,6 @@ function updateFinishedCardsBar() {
   if (!set || !set.qa.length) return;
 
   const total = set.qa.length;
-
-  // Level 1 = fertig (nach deiner Änderung)
   const finished = set.qa.filter(c => (c.sicherheit ?? 3) === 1).length;
 
   const percent = (finished / total) * 100;
@@ -34,21 +47,43 @@ function updateFinishedCardsBar() {
     `${finished} / ${total} geschafft`;
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  updateFinishedCardsBar();
-});
+/* ---------------- NORMALISIERUNG ---------------- */
 
-/* ---------------- Antwort prüfen ---------------- */
+function cosineSimilarity(a, b) {
+  let dot = 0, normA = 0, normB = 0;
 
-let right = false;
-function compareAnswer(userAnswer, correctAnswer) {
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+/* ---------------- KI VERGLEICH ---------------- */
+
+async function compareAnswer(userAnswer, correctAnswer) {
+  if (!currentCard || !extractor || !aiReady) return;
+
   const evalBox = document.getElementById("evaluation");
   evalBox.style.display = "block";
 
-  userAnswer = (userAnswer || "").toLowerCase().trim().replace(/\s+/g, "");
-  correctAnswer = (correctAnswer || "").toLowerCase().trim().replace(/\s+/g, "");
+  const userVec = await extractor(userAnswer, {
+    pooling: "mean",
+    normalize: true
+  });
 
-  if (userAnswer === correctAnswer) {
+  const correctVec = await extractor(correctAnswer, {
+    pooling: "mean",
+    normalize: true
+  });
+
+  const sim = cosineSimilarity(userVec.data, correctVec.data);
+
+  const THRESHOLD = 0.75;
+
+  if (sim >= THRESHOLD) {
     evalBox.textContent = "Richtig! Antwort: " + currentCard.antwort;
     evalBox.style.color = "green";
     right = true;
@@ -62,12 +97,11 @@ function compareAnswer(userAnswer, correctAnswer) {
 /* ---------------- CONFIDENCE ---------------- */
 
 document.querySelectorAll("[data-level]").forEach(btn => {
-  btn.onclick = () => {
+  btn.onclick = async () => {
     const level = Number(btn.dataset.level);
-
     const userAnswer = document.getElementById("userAnswer").value;
 
-    compareAnswer(userAnswer, currentCard.antwort);
+    await compareAnswer(userAnswer, currentCard.antwort);
 
     const name = localStorage.getItem("currentSetName");
     const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
@@ -77,15 +111,12 @@ document.querySelectorAll("[data-level]").forEach(btn => {
 
       if (card && right) {
         card.sicherheit = level;
-        localStorage.setItem("learnsets", JSON.stringify(learnsets));
+      } else if (card && !right) {
+        card.sicherheit = 5;
       }
-      else if (card && !right) {
-        card.sicherheit = 5; // direkt auf "schlecht" setzen, wenn die Antwort falsch war
-        localStorage.setItem("learnsets", JSON.stringify(learnsets));
-      }
+
+      localStorage.setItem("learnsets", JSON.stringify(learnsets));
     }
-
-
 
     updateFinishedCardsBar();
 
@@ -119,12 +150,8 @@ function nextCard() {
     btn.textContent = "Zurück zur Übersicht";
 
     btn.onclick = () => {
-      set.qa.forEach(card => {
-        card.sicherheit = 3;
-      });
-
+      set.qa.forEach(card => card.sicherheit = 3);
       localStorage.setItem("learnsets", JSON.stringify(learnsets));
-
       window.location.href = "../learn.html";
     };
 
@@ -132,7 +159,6 @@ function nextCard() {
   }
 
   currentCard = getWeightedCard(set.qa);
-
   document.getElementById("userAnswer").value = "";
 
   showCard();
@@ -152,10 +178,6 @@ function getWeightedCard(cards) {
     }
   }
 
-  if (pool.length === 0) {
-    return cards[Math.floor(Math.random() * cards.length)];
-  }
-
   let picked;
 
   do {
@@ -163,17 +185,19 @@ function getWeightedCard(cards) {
   } while (picked === lastCard && pool.length > 1);
 
   lastCard = picked;
-
   return picked;
 }
 
-function resetAllCards() {
-  learnsets.forEach(set => {
-    set.qa.forEach(card => {
-      card.sicherheit = 3;
-    });
-  });
-  localStorage.setItem("learnsets", JSON.stringify(learnsets));
-}
+/* ---------------- INIT ---------------- */
 
-window.addEventListener("beforeunload", resetAllCards);
+window.addEventListener("DOMContentLoaded", async () => {
+  updateFinishedCardsBar();
+
+  await initAI();
+  nextCard();
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("nextBtnButton")
+    .addEventListener("click", nextCard);
+});
