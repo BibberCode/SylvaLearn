@@ -5,6 +5,13 @@ let currentCard = null;
 const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 let lastCard = null;
 
+import { setConfidenceSmart } from "./learning_input-answer_smart-answer-compare.js";
+import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js";
+
+function getLearnsets() {
+  return JSON.parse(localStorage.getItem("learnsets")) || [];
+}
+
 /* ---------------- MODE SWITCH ---------------- */
 
 async function setMode(mode) {
@@ -40,54 +47,69 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function nextCard() {
   const name = localStorage.getItem("currentSetName");
-  const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
+  const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 
-  if (!set || !set.qa.length) return;
+  const set = learnsets.find(
+    s => (s.name || "").trim() === (name || "").trim()
+  );
 
-  const finishedCards = set.qa.filter(card => (card.sicherheit ?? 3) === 1);
+  if (!set || !Array.isArray(set.qa) || set.qa.length === 0) return;
 
-  if (finishedCards.length === set.qa.length) {
+  const allFinished = set.qa.every(card => (card.sicherheit ?? 3) === 1);
+
+  if (allFinished) {
     const question = document.getElementById("question");
     const input = document.getElementById("userAnswer");
     const box = document.getElementById("confidenceBox");
     const btn = document.getElementById("nextBtnButton");
     const evalBox = document.getElementById("evaluation");
+    const modeBtns = document.getElementById("modeBtns")
 
     question.textContent = "Alle Karten geschafft 🎉";
     input.style.display = "none";
     box.style.display = "none";
     evalBox.style.display = "none";
+    modeBtns.style.display = "none";
 
     btn.textContent = "Zurück zur Übersicht";
 
     btn.onclick = () => {
-      set.qa.forEach(card => card.sicherheit = 3);
+      set.qa.forEach(card => (card.sicherheit = 3));
       localStorage.setItem("learnsets", JSON.stringify(learnsets));
       window.location.href = "../learn.html";
     };
 
+    updateFinishedCardsBar();
+
     return;
   }
 
-  currentCard = getWeightedCard(set.qa);
-  document.getElementById("userAnswer").value = "";
+  currentCard = getWeightedCardSafe(set.qa);
 
+  if (!currentCard) return;
+
+  document.getElementById("userAnswer").value = "";
   showCard();
 }
 
 /* ---------------- WEIGHTED RANDOM ---------------- */
 
-function getWeightedCard(cards) {
+function getWeightedCardSafe(cards) {
+  if (!Array.isArray(cards) || cards.length === 0) return null;
+
   const pool = [];
 
   for (const card of cards) {
     const s = card.sicherheit ?? 3;
-    const weight = Math.pow(2, s);
+    const weight = Math.max(1, Math.pow(2, s));
 
     for (let i = 0; i < weight; i++) {
       pool.push(card);
     }
   }
+
+  if (pool.length === 0) return cards[0];
+  if (pool.length <= 1) return pool[0];
 
   let picked;
 
@@ -96,6 +118,7 @@ function getWeightedCard(cards) {
   } while (picked === lastCard && pool.length > 1);
 
   lastCard = picked;
+
   return picked;
 }
 
@@ -114,18 +137,54 @@ function showCard() {
 
 function updateFinishedCardsBar() {
   const name = localStorage.getItem("currentSetName");
-  const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
+  const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 
-  if (!set || !set.qa.length) return;
+  const set = learnsets.find(
+    s => (s.name || "").trim() === (name || "").trim()
+  );
+
+  const bar = document.getElementById("finishedCardsBar");
+  const text = document.getElementById("finishedCardsText");
+
+  if (!set || !set.qa || !bar || !text) return;
 
   const total = set.qa.length;
-  const finished = set.qa.filter(c => (c.sicherheit ?? 3) === 1).length;
 
-  const percent = (finished / total) * 100;
+  const finished = set.qa.filter(
+    c => (c.sicherheit ?? 3) <= 1
+  ).length;
 
-  document.getElementById("finishedCardsBar").style.width = percent + "%";
-  document.getElementById("finishedCardsText").textContent =
-    `${finished} / ${total} geschafft`;
+  const percent = total ? (finished / total) * 100 : 0;
+
+  bar.style.width = percent + "%";
+  text.textContent = `${finished} / ${total} geschafft`;
 }
 
-nextCard()
+document.getElementById("nextBtn").onclick = nextCard, updateFinishedCardsBar;
+
+nextCard();
+updateFinishedCardsBar();
+
+
+/* --------Set Confidence---------*/
+
+document.querySelectorAll("[data-level]").forEach(btn => {
+  btn.onclick = () => {
+    const level = Number(btn.dataset.level);
+
+    if (!currentCard) return; // ❗ wichtig
+
+    if (currentMode === "smart") {
+      setConfidenceSmart(level, currentCard);
+    }
+
+    if (currentMode === "strict") {
+      setConfidenceStrict(level, currentCard);
+    }
+
+    document.getElementById("confidenceBox").style.display = "none";
+    document.getElementById("nextBtn").style.display = "block";
+
+    updateFinishedCardsBar();
+  };
+});

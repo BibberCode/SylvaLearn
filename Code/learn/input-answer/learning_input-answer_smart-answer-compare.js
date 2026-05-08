@@ -3,9 +3,9 @@ import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers";
 let extractor = null;
 let aiReady = false;
 
-/* ---------------- AI INIT ---------------- */
+/* ---------------- INIT ---------------- */
 
-async function initAI() {
+export async function init() {
   extractor = await pipeline(
     "feature-extraction",
     "Xenova/all-MiniLM-L6-v2"
@@ -14,7 +14,7 @@ async function initAI() {
   aiReady = true;
 }
 
-/* ---------------- COSINE SIM ---------------- */
+/* ---------------- COSINE SIMILARITY ---------------- */
 
 function cosineSimilarity(a, b) {
   let dot = 0, normA = 0, normB = 0;
@@ -28,79 +28,91 @@ function cosineSimilarity(a, b) {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-/* ---------------- KI VERGLEICH ---------------- */
+/* ---------------- KI COMPARE ---------------- */
 
 async function compareAnswer(userAnswer, correctAnswer) {
-  if (!extractor || !aiReady) return false;
+  if (!aiReady || !extractor) return false;
 
-  const userVec = await extractor(userAnswer, {
-    pooling: "mean",
-    normalize: true
-  });
+  const normalizeText = (str) =>
+    (str || "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, " ");
 
-  const correctVec = await extractor(correctAnswer, {
-    pooling: "mean",
-    normalize: true
-  });
+  const userText = normalizeText(userAnswer);
+  const correctText = normalizeText(correctAnswer);
 
-  const sim = cosineSimilarity(userVec.data, correctVec.data);
+  // schneller Shortcut: exakter Match ohne KI
+  if (userText === correctText) return true;
 
-  const THRESHOLD = 0.75;
+  try {
+    const [userVec, correctVec] = await Promise.all([
+      extractor(userText, {
+        pooling: "mean",
+        normalize: true
+      }),
+      extractor(correctText, {
+        pooling: "mean",
+        normalize: true
+      })
+    ]);
 
-  return sim >= THRESHOLD;
+    if (!userVec?.data || !correctVec?.data) return false;
+
+    const similarity = cosineSimilarity(userVec.data, correctVec.data);
+
+    // dynamischer Threshold (robuster bei kurzen Antworten)
+    const lengthFactor =
+      Math.min(userText.length, correctText.length) / 50;
+
+    const THRESHOLD = 0.72 - lengthFactor * 0.05;
+
+    return similarity >= THRESHOLD;
+  } catch (e) {
+    return false;
+  }
 }
-
 /* ---------------- CONFIDENCE ---------------- */
 
-document.querySelectorAll("[data-level]").forEach(btn => {
-  btn.onclick = async () => {
-    const level = Number(btn.dataset.level);
-    const userAnswer = document.getElementById("userAnswer").value;
+export async function setConfidenceSmart(level, currentCard) {
+  if (!currentCard) return;
 
-    const result = await compareAnswer(userAnswer, currentCard.antwort);
+  const userAnswer = document.getElementById("userAnswer").value;
 
-    const evalBox = document.getElementById("evaluation");
-    evalBox.style.display = "block";
+  const isCorrect = await compareAnswer(
+    userAnswer,
+    currentCard.antwort
+  );
 
-    if (result) {
-      evalBox.textContent = "Richtig! Antwort: " + currentCard.antwort;
-      evalBox.style.color = "green";
-    } else {
-      evalBox.textContent = "Falsch! Richtige Antwort: " + currentCard.antwort;
-      evalBox.style.color = "red";
+  const evalBox = document.getElementById("evaluation");
+  evalBox.style.display = "block";
+
+  if (isCorrect) {
+    evalBox.textContent = "Richtig! Antwort: " + currentCard.antwort;
+    evalBox.style.color = "green";
+  } else {
+    evalBox.textContent = "Falsch! Richtige Antwort: " + currentCard.antwort;
+    evalBox.style.color = "red";
+  }
+
+  const name = localStorage.getItem("currentSetName");
+  const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
+
+  const set = learnsets.find(
+    s => (s.name || "").trim() === (name || "").trim()
+  );
+
+  if (set) {
+    const card = set.qa.find(
+      q => q.frage === currentCard.frage
+    );
+
+    if (card && isCorrect) {
+      card.sicherheit = level;
+    } else if (card) {
+      card.sicherheit = 5;
     }
 
-    const name = localStorage.getItem("currentSetName");
-    const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
-
-    if (set) {
-      const card = set.qa.find(q => q.frage === currentCard.frage);
-
-      if (card && result) {
-        card.sicherheit = level;
-      } else if (card && !result) {
-        card.sicherheit = 5;
-      }
-
-      localStorage.setItem("learnsets", JSON.stringify(learnsets));
-    }
-
-    updateFinishedCardsBar();
-
-    document.getElementById("confidenceBox").style.display = "none";
-    document.getElementById("nextBtn").style.display = "block";
-  };
-});
-
-/* ---------------- INIT ---------------- */
-
-window.addEventListener("DOMContentLoaded", async () => {
-  updateFinishedCardsBar();
-
-  document
-    .getElementById("nextBtnButton")
-    .addEventListener("click", nextCard);
-
-  await initAI();
-  nextCard();
-});
+    localStorage.setItem("learnsets", JSON.stringify(learnsets));
+  }
+}

@@ -5,54 +5,50 @@ function compareAnswer(userAnswer, correctAnswer) {
   const evalBox = document.getElementById("evaluation");
   evalBox.style.display = "block";
 
-  userAnswer = (userAnswer || "").toLowerCase().trim().replace(/\s+/g, "");
-  correctAnswer = (correctAnswer || "").toLowerCase().trim().replace(/\s+/g, "");
+  userAnswer = (userAnswer || "");
+  correctAnswer = (correctAnswer || "")
 
-  if (userAnswer === correctAnswer) {
-    evalBox.textContent = "Richtig! Antwort: " + currentCard.antwort;
+  const isCorrect = userAnswer === correctAnswer;
+
+  if (isCorrect) {
+    evalBox.textContent = "Richtig! Antwort: " + correctAnswer;
     evalBox.style.color = "green";
     right = true;
   } else {
-    evalBox.textContent = "Falsch! Richtige Antwort: " + currentCard.antwort;
+    evalBox.textContent = "Falsch! Richtige Antwort: " + correctAnswer;
     evalBox.style.color = "red";
     right = false;
   }
+
+  return isCorrect;
 }
 
 /* ---------------- CONFIDENCE ---------------- */
 
-document.querySelectorAll("[data-level]").forEach(btn => {
-  btn.onclick = () => {
-    const level = Number(btn.dataset.level);
+export function setConfidenceStrict(level, currentCard) {
+  const userAnswer = document.getElementById("userAnswer").value;
 
-    const userAnswer = document.getElementById("userAnswer").value;
+  const isCorrect = compareAnswer(userAnswer, currentCard.antwort);
 
-    compareAnswer(userAnswer, currentCard.antwort);
+  const name = localStorage.getItem("currentSetName");
+  const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
+  const set = learnsets.find(
+    s => (s.name || "").trim() === (name || "").trim()
+  );
 
-    const name = localStorage.getItem("currentSetName");
-    const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
+  if (set) {
+    const card = set.qa.find(q => q.frage === currentCard.frage);
 
-    if (set) {
-      const card = set.qa.find(q => q.frage === currentCard.frage);
-
-      if (card && right) {
-        card.sicherheit = level;
-        localStorage.setItem("learnsets", JSON.stringify(learnsets));
-      }
-      else if (card && !right) {
-        card.sicherheit = 5; // direkt auf "schlecht" setzen, wenn die Antwort falsch war
-        localStorage.setItem("learnsets", JSON.stringify(learnsets));
-      }
+    if (card && isCorrect) {
+      card.sicherheit = level;
+    } else if (card) {
+      card.sicherheit = 5;
     }
 
+    localStorage.setItem("learnsets", JSON.stringify(learnsets));
+  }
+}
 
-
-    updateFinishedCardsBar();
-
-    document.getElementById("confidenceBox").style.display = "none";
-    document.getElementById("nextBtn").style.display = "block";
-  };
-});
 
 /* ---------------- WEIGHTED RANDOM ---------------- */
 
