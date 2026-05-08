@@ -46,37 +46,11 @@ This is my first Progressive Web App (PWA), so bugs or unexpected behavior may s
 
 ---
 
-## 📁 Project Structure
-
-```
-/Code
-  /learn
-    /input-answer
-      answer-compare-mode-controller.js
-      learning_input-answer_smart-answer-compare.js
-      learning_input-answer_strict-answer-compare.js
-index.html
-learn.html
-```
-
----
-
 ## 🚀 Installation
 
 1. Clone the repository
-2. Open `index.html` or `learn.html` in your browser
+2. Open `index.html` in your browser
 3. No build tools required – runs fully in the browser
-
----
-
-## 🌐 Hosting (GitHub Pages)
-
-You can host this project for free using GitHub Pages:
-
-1. Go to repository settings
-2. Navigate to **Pages**
-3. Select branch `main` and `/root`
-4. Save and wait for deployment
 
 ---
 
@@ -97,7 +71,6 @@ The project is open source and welcomes contributions.
 ## 🔮 Planned Features
 
 * 🔐 User accounts
-* ☁️ Cloud sync
 * 📈 Advanced statistics per card
 * 🧠 Improved spaced repetition algorithm
 * 🎮 Gamification system
