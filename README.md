@@ -1,41 +1,51 @@
-# Learn App
+# Learn App 🚀
 
-Eine moderne Lern-App zum effektiven Lernen mit Karteikarten, Confidence-System und smartem Vergleichssystem.
-
----
-
-## 🚀 Features
-
-* 📚 Lernsets mit Frage-Antwort Karten
-* 🧠 Smart Mode (KI-ähnlicher Antwortvergleich)
-* ⚡ Strict Mode (exakter Vergleich)
-* 📊 Fortschrittsanzeige pro Lernset
-* 💾 Speicherung im Browser (localStorage)
-* 🔄 Weighted Card System (schwierige Karten kommen häufiger)
+A Progressive Web App focused on confident, efficient, and smart learning 📚🧠
 
 ---
 
-## 🧩 Funktionsweise
+## ✨ About the Project
 
-Die App zeigt zufällige Karten aus einem Lernset an.
+Learn App is a flashcard-based learning system designed to help users memorize content more effectively using repetition, confidence tracking, and adaptive difficulty.
 
-* Nutzer gibt eine Antwort ein
-* System bewertet die Antwort
-* Confidence-Level wird gesetzt (1–5)
-* Karten mit schlechterem Score erscheinen häufiger
+This is my first Progressive Web App (PWA), so bugs or unexpected behavior may still occur 🐛
 
 ---
 
-## 🛠️ Technologien
+## 🎯 Features
 
-* HTML, CSS, JavaScript (Vanilla)
+* 📚 Flashcard-based learning system
+* 🧠 Smart Mode (AI-style answer comparison)
+* ⚡ Strict Mode (exact answer matching)
+* 📊 Progress tracking per learning set
+* 💾 Offline storage using localStorage
+* 🔄 Weighted card system (harder cards appear more often)
+* 📱 PWA support (installable on devices)
+
+---
+
+## 🧩 How it works
+
+1. A question is shown
+2. You type your answer
+3. The system evaluates your response
+4. You set a confidence level (1–5)
+5. The system adapts future repetitions based on your performance
+
+---
+
+## 🛠️ Technologies
+
+* HTML5
+* CSS3
+* JavaScript (Vanilla)
 * ES Modules
-* localStorage für Speicherung
-* optional: AI Feature via Transformers.js
+* localStorage
+* Transformers.js (optional AI feature)
 
 ---
 
-## 📁 Projektstruktur
+## 📁 Project Structure
 
 ```
 /Code
@@ -50,33 +60,56 @@ learn.html
 
 ---
 
-## ⚙️ Installation
+## 🚀 Installation
 
-1. Repository klonen
-2. `index.html` im Browser öffnen
-3. Keine Installation nötig (läuft komplett im Browser)
-
----
-
-## 📈 Ziel des Projekts
-
-Die Learn App soll eine einfache, schnelle und effektive Möglichkeit bieten, Lerninhalte digital zu wiederholen und zu verbessern.
+1. Clone the repository
+2. Open `index.html` or `learn.html` in your browser
+3. No build tools required – runs fully in the browser
 
 ---
 
-## 🔮 Geplante Features
+## 🌐 Hosting (GitHub Pages)
 
-* Statistiken pro Karte
-* Spaced Repetition Algorithmus
+You can host this project for free using GitHub Pages:
+
+1. Go to repository settings
+2. Navigate to **Pages**
+3. Select branch `main` and `/root`
+4. Save and wait for deployment
 
 ---
 
-## 👤 Autor
+## 🐛 Bugs & Contributions
+
+This is an early-stage project.
+
+You can help by:
+
+* 🐞 Opening an issue
+* 🔧 Fixing bugs or improving features
+* 💡 Suggesting improvements
+
+The project is open source and welcomes contributions.
+
+---
+
+## 🔮 Planned Features
+
+* 🔐 User accounts
+* ☁️ Cloud sync
+* 📈 Advanced statistics per card
+* 🧠 Improved spaced repetition algorithm
+* 🎮 Gamification system
+
+---
+
+## 👤 Author
 
 BibberCode
 
 ---
 
-## 📄 Lizenz
+## ⚖️ License
 
-MIT License
+This project is licensed under the MIT License.
+You are free to use, modify, and distribute it.
