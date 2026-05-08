@@ -30,7 +30,26 @@
   <div class="card" id="flashcard">
 
     <h2 id="question">Frage</h2>
-    <input id="userAnswer" placeholder="Deine Antwort" style="margin-top: 0px; margin-bottom: 1px;"></input>
+
+    <div class="answer-row" style="display: flex; align-items: center; gap: 10px;">
+
+      <input 
+        id="userAnswer"
+        placeholder="Deine Antwort"
+        style="flex: 1;"
+      >
+
+      <div class="mode-switch" style="display: flex; gap: 5px;">
+        <button class="mode active" id="smartBtn">
+          Smart
+        </button>
+
+        <button class="mode" id="strictBtn">
+          Strict
+        </button>
+      </div>
+
+    </div>
 
     <h5 id="evaluation" style="display:none; margin-top:15px; margin-bottom: 1px;"></h5>
   </div>
@@ -67,7 +86,7 @@
 <app-nav></app-nav>
 
 <!-- SCRIPT -->
-<script type="module" src="./learning_input-answer.js" defer></script>
+<script type="module" src="./answer-compare-mode-controller.js" defer></script>
 <script src="../../home/frontend/countingTime.js" defer></script>
 
 </body>

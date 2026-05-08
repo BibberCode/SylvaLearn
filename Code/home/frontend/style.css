@@ -253,3 +253,27 @@ input:focus {
     grid-template-columns: repeat(5, 1fr); /* alle nebeneinander */
   }
 }
+
+
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.answer-row input {
+  flex: 1;
+}
+
+/* Handy */
+@media (max-width: 600px) {
+  .answer-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mode-switch {
+    width: 100%;
+    justify-content: center;
+  }
+}

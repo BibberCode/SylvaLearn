@@ -1,43 +1,3 @@
-let currentCard = null;
-const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
-let lastCard = null;
-
-nextCard();
-
-/* ---------------- UI ---------------- */
-
-function showCard() {
-  if (!currentCard) return;
-
-  document.getElementById("question").textContent = currentCard.frage;
-
-  document.getElementById("evaluation").textContent = "";
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("confidenceBox").style.display = "block";
-}
-
-function updateFinishedCardsBar() {
-  const name = localStorage.getItem("currentSetName");
-  const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
-
-  if (!set || !set.qa.length) return;
-
-  const total = set.qa.length;
-
-  // Level 1 = fertig (nach deiner Änderung)
-  const finished = set.qa.filter(c => (c.sicherheit ?? 3) === 1).length;
-
-  const percent = (finished / total) * 100;
-
-  document.getElementById("finishedCardsBar").style.width = percent + "%";
-  document.getElementById("finishedCardsText").textContent =
-    `${finished} / ${total} geschafft`;
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  updateFinishedCardsBar();
-});
-
 /* ---------------- Antwort prüfen ---------------- */
 
 let right = false;
@@ -93,50 +53,6 @@ document.querySelectorAll("[data-level]").forEach(btn => {
     document.getElementById("nextBtn").style.display = "block";
   };
 });
-
-/* ---------------- NEXT CARD ---------------- */
-
-function nextCard() {
-  const name = localStorage.getItem("currentSetName");
-  const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
-
-  if (!set || !set.qa.length) return;
-
-  const finishedCards = set.qa.filter(card => (card.sicherheit ?? 3) === 1);
-
-  if (finishedCards.length === set.qa.length) {
-    const question = document.getElementById("question");
-    const input = document.getElementById("userAnswer");
-    const box = document.getElementById("confidenceBox");
-    const btn = document.getElementById("nextBtnButton");
-    const evalBox = document.getElementById("evaluation");
-
-    question.textContent = "Alle Karten geschafft 🎉";
-    input.style.display = "none";
-    box.style.display = "none";
-    evalBox.style.display = "none";
-
-    btn.textContent = "Zurück zur Übersicht";
-
-    btn.onclick = () => {
-      set.qa.forEach(card => {
-        card.sicherheit = 3;
-      });
-
-      localStorage.setItem("learnsets", JSON.stringify(learnsets));
-
-      window.location.href = "../learn.html";
-    };
-
-    return;
-  }
-
-  currentCard = getWeightedCard(set.qa);
-
-  document.getElementById("userAnswer").value = "";
-
-  showCard();
-}
 
 /* ---------------- WEIGHTED RANDOM ---------------- */
 
