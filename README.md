@@ -15,8 +15,9 @@ This is my first Progressive Web App (PWA), so bugs or unexpected behavior may s
 ## 🎯 Features
 
 * 📚 Flashcard-based learning system
-* 🧠 Smart Mode (AI-style answer comparison)
+* 🧠 Smart Mode (AI-based answer comparison)
 * ⚡ Strict Mode (exact answer matching)
+* 🔍 Smart Self-Compare (semantic similarity evaluation)
 * 📊 Progress tracking per learning set
 * 💾 Offline storage using localStorage
 * 🔄 Weighted card system (harder cards appear more often)
