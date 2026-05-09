@@ -1,45 +1,65 @@
 let running = false;
-let lastUpdate = 0;
+let lastUpdate = null;
 let interval = null;
+
+const KEY_DATE = "date";
+const KEY_DAILY = "dailyMinutes";
+const KEY_TOTAL = "totalMinutes";
 
 function getToday() {
   return new Date().toLocaleDateString("sv-SE");
 }
 
-function checkNewDay() {
+/* sauberer Reset nur 1x pro Tag */
+function ensureDay() {
   const today = getToday();
-  const savedDate = localStorage.getItem("date");
+  const saved = localStorage.getItem(KEY_DATE);
 
-  if (savedDate !== today) {
-    localStorage.setItem("date", today);
-    localStorage.setItem("dailyMinutes", "0");
+  if (saved !== today) {
+    localStorage.setItem(KEY_DATE, today);
+    localStorage.setItem(KEY_DAILY, "0");
   }
 }
 
-function tick() {
-  checkNewDay();
-
-  const now = Date.now();
-  const delta = (now - lastUpdate) / 1000 / 60;
-  lastUpdate = now;
-
-  let daily = Number(localStorage.getItem("dailyMinutes") || 0);
-  let total = Number(localStorage.getItem("totalMinutes") || 0);
-
-  daily += delta;
-  total += delta;
-
-  localStorage.setItem("dailyMinutes", daily.toFixed(4));
-  localStorage.setItem("totalMinutes", total.toFixed(4));
+/* sichere Number-Read Funktion */
+function read(key) {
+  return Number(localStorage.getItem(key) || 0);
 }
 
+function write(key, value) {
+  localStorage.setItem(key, String(value));
+}
+
+/* Tick basiert nur auf echter Zeitdifferenz */
+function tick() {
+  ensureDay();
+
+  const now = Date.now();
+
+  if (lastUpdate === null) {
+    lastUpdate = now;
+    return;
+  }
+
+  const diffMinutes = (now - lastUpdate) / 60000;
+  lastUpdate = now;
+
+  if (diffMinutes <= 0) return;
+
+  const daily = read(KEY_DAILY) + diffMinutes;
+  const total = read(KEY_TOTAL) + diffMinutes;
+
+  write(KEY_DAILY, daily);
+  write(KEY_TOTAL, total);
+}
+
+/* Start/Stop stabilisiert */
 function start() {
   if (running) return;
 
   running = true;
   lastUpdate = Date.now();
-
-  checkNewDay();
+  ensureDay();
 
   interval = setInterval(tick, 1000);
 }
@@ -48,13 +68,14 @@ function stop() {
   if (!running) return;
 
   running = false;
-
   clearInterval(interval);
   interval = null;
+  lastUpdate = null;
 }
 
+/* nur laufen wenn sichtbar */
 function shouldRun() {
-  return !document.hidden;
+  return document.visibilityState === "visible";
 }
 
 function updateState() {
@@ -63,7 +84,7 @@ function updateState() {
 }
 
 /* INIT */
-checkNewDay();
+ensureDay();
 updateState();
 
 document.addEventListener("visibilitychange", updateState);
