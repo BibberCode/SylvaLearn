@@ -45,6 +45,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 /* ---------------- NEXT CARD ---------------- */
 
+let allFinished = null
 function nextCard() {
   const name = localStorage.getItem("currentSetName");
   const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
@@ -55,7 +56,7 @@ function nextCard() {
 
   if (!set || !Array.isArray(set.qa) || set.qa.length === 0) return;
 
-  const allFinished = set.qa.every(card => (card.sicherheit ?? 3) === 1);
+  allFinished = set.qa.every(card => (card.sicherheit ?? 3) === 1);
 
   if (allFinished) {
     const question = document.getElementById("question");
@@ -83,7 +84,8 @@ function nextCard() {
 
     return;
   }
-
+  
+  if (currentCard === getWeightedCardSafe(set.qa)) return nextCard();
   currentCard = getWeightedCardSafe(set.qa);
 
   if (!currentCard) return;
@@ -188,3 +190,18 @@ document.querySelectorAll("[data-level]").forEach(btn => {
     updateFinishedCardsBar();
   };
 });
+
+
+/* --------Reset all cards--------- */
+function resetAllCards() {
+  learnsets.forEach(set => {
+    set.qa.forEach(card => {
+      if (allFinished) {
+        card.sicherheit = 3;
+        localStorage.setItem("learnsets", JSON.stringify(learnsets));
+      }
+    });
+  });
+}
+
+window.addEventListener("beforeunload", resetAllCards);

@@ -78,14 +78,3 @@ function getWeightedCard(cards) {
 
   return picked;
 }
-
-function resetAllCards() {
-  learnsets.forEach(set => {
-    set.qa.forEach(card => {
-      card.sicherheit = 3;
-    });
-  });
-  localStorage.setItem("learnsets", JSON.stringify(learnsets));
-}
-
-window.addEventListener("beforeunload", resetAllCards);

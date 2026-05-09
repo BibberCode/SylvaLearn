@@ -26,7 +26,10 @@ function addLearnset() {
   const title = titleEl.value.trim();
   let description = descEl.value;
 
-  if (!title) return;
+  if (!title) {
+    alert("Bitte gib einen Namen ein!")
+    return;
+  }
 
   if (!description) {
     description = "Keine Beschreibung vorhanden.";
