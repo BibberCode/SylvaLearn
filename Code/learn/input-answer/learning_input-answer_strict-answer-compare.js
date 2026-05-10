@@ -1,52 +1,56 @@
 /* ---------------- Antwort prüfen ---------------- */
 
 let right = false;
-function compareAnswer(userAnswer, correctAnswer) {
+function compareAnswer(userAnswer, currentCard, reverse) {
   const evalBox = document.getElementById("evaluation");
   evalBox.style.display = "block";
 
-  userAnswer = (userAnswer || "");
-  correctAnswer = (correctAnswer || "")
+  const correctAnswer = reverse
+    ? currentCard.frage
+    : currentCard.antwort;
 
-  const isCorrect = userAnswer === correctAnswer;
+  userAnswer = (userAnswer || "").trim().toLowerCase();
+  const correct = (correctAnswer || "").trim().toLowerCase();
+
+  const isCorrect = userAnswer === correct;
 
   if (isCorrect) {
-    evalBox.textContent = "Richtig! Antwort: " + correctAnswer;
+    evalBox.textContent = "Richtig!";
     evalBox.style.color = "green";
-    right = true;
   } else {
     evalBox.textContent = "Falsch! Richtige Antwort: " + correctAnswer;
     evalBox.style.color = "red";
-    right = false;
   }
 
   return isCorrect;
 }
-
 /* ---------------- CONFIDENCE ---------------- */
 
-export function setConfidenceStrict(level, currentCard) {
+export function setConfidenceStrict(level, currentCard, reverse) {
   const userAnswer = document.getElementById("userAnswer").value;
 
-  const isCorrect = compareAnswer(userAnswer, currentCard.antwort);
+  const isCorrect = compareAnswer(userAnswer, currentCard, reverse);
 
   const name = localStorage.getItem("currentSetName");
   const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
+
   const set = learnsets.find(
     s => (s.name || "").trim() === (name || "").trim()
   );
 
-  if (set) {
-    const card = set.qa.find(q => q.frage === currentCard.frage);
+  if (!set) return;
 
-    if (card && isCorrect) {
-      card.sicherheit = level;
-    } else if (card) {
-      card.sicherheit = 5;
-    }
+  const card = set.qa.find(q => q.frage === currentCard.frage);
 
-    localStorage.setItem("learnsets", JSON.stringify(learnsets));
+  if (!card) return;
+
+  if (isCorrect) {
+    card.sicherheit = level;
+  } else {
+    card.sicherheit = 5;
   }
+
+  localStorage.setItem("learnsets", JSON.stringify(learnsets));
 }
 
 
@@ -57,24 +61,14 @@ function getWeightedCard(cards) {
 
   for (const card of cards) {
     const s = card.sicherheit ?? 3;
-    const weight = Math.pow(2, s);
+    const weight = Math.max(1, Math.pow(2, s));
 
     for (let i = 0; i < weight; i++) {
       pool.push(card);
     }
   }
 
-  if (pool.length === 0) {
-    return cards[Math.floor(Math.random() * cards.length)];
-  }
+  if (pool.length === 0) return cards[0];
 
-  let picked;
-
-  do {
-    picked = pool[Math.floor(Math.random() * pool.length)];
-  } while (picked === lastCard && pool.length > 1);
-
-  lastCard = picked;
-
-  return picked;
+  return pool[Math.floor(Math.random() * pool.length)];
 }

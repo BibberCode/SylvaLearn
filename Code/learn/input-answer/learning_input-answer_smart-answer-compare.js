@@ -30,8 +30,12 @@ function cosineSimilarity(a, b) {
 
 /* ---------------- KI COMPARE ---------------- */
 
-async function compareAnswer(userAnswer, correctAnswer) {
+async function compareAnswer(userAnswer, currentCard, reverse) {
   if (!aiReady || !extractor) return false;
+
+  const correctAnswer = reverse
+    ? currentCard.frage
+    : currentCard.antwort;
 
   const normalizeText = (str) =>
     (str || "")
@@ -42,56 +46,51 @@ async function compareAnswer(userAnswer, correctAnswer) {
   const userText = normalizeText(userAnswer);
   const correctText = normalizeText(correctAnswer);
 
-  // schneller Shortcut: exakter Match ohne KI
   if (userText === correctText) return true;
 
   try {
     const [userVec, correctVec] = await Promise.all([
-      extractor(userText, {
-        pooling: "mean",
-        normalize: true
-      }),
-      extractor(correctText, {
-        pooling: "mean",
-        normalize: true
-      })
+      extractor(userText, { pooling: "mean", normalize: true }),
+      extractor(correctText, { pooling: "mean", normalize: true })
     ]);
 
     if (!userVec?.data || !correctVec?.data) return false;
 
     const similarity = cosineSimilarity(userVec.data, correctVec.data);
 
-    // dynamischer Threshold (robuster bei kurzen Antworten)
-    const lengthFactor =
-      Math.min(userText.length, correctText.length) / 50;
-
-    const THRESHOLD = 0.72 - lengthFactor * 0.05;
+    const THRESHOLD = 0.72;
 
     return similarity >= THRESHOLD;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
+
 /* ---------------- CONFIDENCE ---------------- */
 
-export async function setConfidenceSmart(level, currentCard) {
+export async function setConfidenceSmart(level, currentCard, reverse) {
   if (!currentCard) return;
 
   const userAnswer = document.getElementById("userAnswer").value;
 
   const isCorrect = await compareAnswer(
     userAnswer,
-    currentCard.antwort
+    currentCard,
+    reverse
   );
 
   const evalBox = document.getElementById("evaluation");
   evalBox.style.display = "block";
 
+  const correctAnswer = reverse
+    ? currentCard.frage
+    : currentCard.antwort;
+
   if (isCorrect) {
-    evalBox.textContent = "Richtig! Antwort: " + currentCard.antwort;
+    evalBox.textContent = "Richtig!";
     evalBox.style.color = "green";
   } else {
-    evalBox.textContent = "Falsch! Richtige Antwort: " + currentCard.antwort;
+    evalBox.textContent = "Falsch! Richtige Antwort: " + correctAnswer;
     evalBox.style.color = "red";
   }
 
@@ -102,17 +101,13 @@ export async function setConfidenceSmart(level, currentCard) {
     s => (s.name || "").trim() === (name || "").trim()
   );
 
-  if (set) {
-    const card = set.qa.find(
-      q => q.frage === currentCard.frage
-    );
+  if (!set) return;
 
-    if (card && isCorrect) {
-      card.sicherheit = level;
-    } else if (card) {
-      card.sicherheit = 5;
-    }
+  const card = set.qa.find(q => q.frage === currentCard.frage);
 
-    localStorage.setItem("learnsets", JSON.stringify(learnsets));
-  }
+  if (!card) return;
+
+  card.sicherheit = isCorrect ? level : 5;
+
+  localStorage.setItem("learnsets", JSON.stringify(learnsets));
 }

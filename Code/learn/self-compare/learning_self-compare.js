@@ -2,16 +2,36 @@ let currentCard = null;
 const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 let lastCard = null;
 
+let reverse = localStorage.getItem("reverse") === "true";
+
 nextCard();
+
+/* ---------------- INIT ---------------- */
+
+window.addEventListener("DOMContentLoaded", () => {
+  /* Reverse Button */
+  const reverseBtn = document.getElementById("reverseBtn");
+
+  reverseBtn.addEventListener("click", () => {
+    reverse = !reverse;
+    localStorage.setItem("reverse", reverse);
+
+    reverseBtn.classList.toggle("active", reverse);
+  });
+
+  reverseBtn.classList.toggle("active", reverse);
+});
 
 /* ---------------- UI ---------------- */
 
 function showCard() {
   if (!currentCard) return;
 
-  
+  const frage = reverse
+    ? currentCard.antwort
+    : currentCard.frage;
 
-  document.getElementById("question").textContent = currentCard.frage;
+  document.getElementById("question").textContent = frage;
 
   document.getElementById("evaluation").textContent = "";
   document.getElementById("userAnswers").style.display = "none";
@@ -57,8 +77,12 @@ function checkLevel() {
   const name = localStorage.getItem("currentSetName");
   const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
 
+  const frage = reverse
+    ? currentCard.antwort
+    : currentCard.frage;
+
   if (set) {
-    const card = set.qa.find(q => q.frage === currentCard.frage);
+    const card = set.qa.find(q => q.frage === frage);
 
     if (card && right) {
       card.sicherheit = level;
@@ -81,12 +105,16 @@ document.querySelectorAll("[data-level]").forEach(btn => {
   btn.onclick = () => {
     level = Number(btn.dataset.level);
 
+    const antwort = reverse
+    ? currentCard.frage
+    : currentCard.antwort;
+
     document.getElementById("confidenceBox").style.display = "none";
     document.getElementById("userAnswers").style.display = "block";
 
     const evalBox = document.getElementById("evaluation");
     evalBox.style.display = "block";
-    evalBox.textContent = "Antort: " + currentCard.antwort;
+    evalBox.textContent = "Antort: " + antwort;
   };
 });
 

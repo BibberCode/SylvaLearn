@@ -43,7 +43,7 @@ body {
 }
 
 /* CARD */
-.card, .small-card{
+.card, .small-card {
   background: white;
   border-radius: 16px;
   padding: 18px;
@@ -70,20 +70,20 @@ body {
   width: 50%;
 }
 
-/* GRID (automatisch responsive) */
+/* GRID */
 .grid {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
-/* Optional: Begrenzung für große Screens */
 @media (min-width: 900px) {
   .grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
+/* SMALL CARD */
 .small-card {
   background: white;
   padding: 14px;
@@ -121,13 +121,14 @@ body {
   text-align: center;
 }
 
-/* größere Klickfläche auf Handy */
+/* Handy Button padding */
 @media (max-width: 600px) {
   .button {
     padding: 14px;
   }
 }
 
+/* PROFILE */
 .profile-card {
   text-align: center;
 }
@@ -174,7 +175,7 @@ input:focus {
   border-color: #17653c;
 }
 
-/* EMOJI PICKER (fix für mobile) */
+/* EMOJI */
 .emoji-picker {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -217,13 +218,14 @@ input:focus {
   border-radius: 10px;
   cursor: pointer;
   background: transparent;
-  color: #000000;
+  color: #000;
   transition: 0.2s;
+  white-space: nowrap;
 }
 
 .mode:hover {
-  background: rgba(255,255,255,0.08);
-  color: rgb(137, 137, 137);
+  background: rgba(0,0,0,0.05);
+  color: rgb(90, 90, 90);
 }
 
 .mode.active {
@@ -232,29 +234,26 @@ input:focus {
   box-shadow: 0 2px 10px rgba(23, 101, 60, 0.4);
 }
 
-
-/* Standard (Handy) */
+/* CONFIDENCE */
 .confidence-buttons {
   display: grid;
   gap: 10px;
   grid-template-columns: 1fr;
 }
 
-/* Tablet */
 @media (min-width: 600px) {
   .confidence-buttons {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* PC */
 @media (min-width: 900px) {
   .confidence-buttons {
-    grid-template-columns: repeat(5, 1fr); /* alle nebeneinander */
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 
-
+/* ANSWER ROW */
 .answer-row {
   display: flex;
   align-items: center;
@@ -265,57 +264,23 @@ input:focus {
   flex: 1;
 }
 
-/* Handy */
 @media (max-width: 600px) {
   .answer-row {
     flex-direction: column;
     align-items: stretch;
   }
-
-  .mode-switch {
-    width: 100%;
-    justify-content: center;
-  }
 }
 
-
-/* Stats */
-.bar {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  height: 100%;
-}
-
-.bar div {
-  width: 100%;
-  background: #17653c;
-  border-radius: 10px;
-}
-
-.bar span {
-  font-size: 12px;
-  color: #6b7a72;
-  margin-top: 8px;
-}
-
-
-.topbar{
+/* TOPBAR */
+.topbar {
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-#question{
+#question {
   margin: 0;
-}
-
-#modeBtns{
-  margin-left: auto;
-  display: flex;
-  gap: 5px;
+  flex: 1;
 }
 
 .reverse-switch {
@@ -325,4 +290,18 @@ input:focus {
   padding: 6px;
   border-radius: 12px;
   width: fit-content;
+  margin-left: auto;
+}
+
+/* ✔️ FIX: MOBILE MODE BUTTONS */
+@media (max-width: 600px) {
+  .mode-switch {
+    justify-content: center;
+  }
+
+  .mode {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 10px 12px;
+  }
 }
