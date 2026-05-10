@@ -300,3 +300,29 @@ input:focus {
   color: #6b7a72;
   margin-top: 8px;
 }
+
+
+.topbar{
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+#question{
+  margin: 0;
+}
+
+#modeBtns{
+  margin-left: auto;
+  display: flex;
+  gap: 5px;
+}
+
+.reverse-switch {
+  display: flex;
+  gap: 8px;
+  background: #efefef;
+  padding: 6px;
+  border-radius: 12px;
+  width: fit-content;
+}

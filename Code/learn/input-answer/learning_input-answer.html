@@ -29,7 +29,15 @@
   <!-- KARTE -->
   <div class="card" id="flashcard">
 
-    <h2 id="question">Frage</h2>
+    <div class="topbar">
+      <h2 id="question">Frage</h2>
+
+      <div id="modeBtns" class="mode-switch">
+        <button class="mode active" id="reverseBtn">
+          Reverse
+        </button>
+      </div>
+    </div>
 
     <div class="answer-row" style="display: flex; align-items: center; gap: 10px;">
 
@@ -84,6 +92,7 @@
 <!-- SCRIPT -->
 <script type="module" src="./answer-compare-mode-controller.js" defer></script>
 <script src="../../home/frontend/countingTime.js" defer></script>
+<script src="../shared.js" defer></script>
 
 </body>
 </html>

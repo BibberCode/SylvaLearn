@@ -29,9 +29,20 @@
   <!-- KARTE -->
   <div class="card" id="flashcard">
 
-    <h2 id="question">Frage</h2>
+    <div class="topbar">
+      <h2 id="question">Frage</h2>
 
-    <h5 id="evaluation" style="display:none; margin-top:15px; margin-bottom: 1px; color: #6b7280;"></h5>
+      <div id="modeBtns" class="reverse-switch">
+        <button class="mode active" id="reverseBtn">
+          Reverse
+        </button>
+      </div>
+    </div>
+
+    <h5 id="evaluation"
+        style="display:none; margin-top:15px; margin-bottom:1px; color:#6b7280;">
+    </h5>
+
   </div>
 
   <!-- CONFIDENCE -->
@@ -73,6 +84,7 @@
 <!-- SCRIPT -->
 <script src="./learning_self-compare.js" defer></script>
 <script src="../../home/frontend/countingTime.js" defer></script>
+<script src="../shared.js" defer></script>
 
 </body>
 </html>

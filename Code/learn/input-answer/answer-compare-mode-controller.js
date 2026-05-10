@@ -7,6 +7,7 @@ let lastCard = null;
 
 import { setConfidenceSmart } from "./learning_input-answer_smart-answer-compare.js";
 import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js";
+import { reverse, reverseMode, modeSwitch } from "../shared.js";
 
 function getLearnsets() {
   return JSON.parse(localStorage.getItem("learnsets")) || [];
@@ -39,7 +40,13 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("smartBtn").addEventListener("click", () => setMode("smart"));
   document.getElementById("strictBtn").addEventListener("click", () => setMode("strict"));
 
-  setMode(currentMode); // initial laden
+  document.getElementById("reverseBtn").addEventListener("click", () => {
+    modeSwitch();
+    showCard();
+  });
+
+  reverseMode();
+  setMode(currentMode);
 });
 
 
@@ -130,7 +137,15 @@ function getWeightedCardSafe(cards) {
 function showCard() {
   if (!currentCard) return;
 
-  document.getElementById("question").textContent = currentCard.frage;
+  let frage;
+
+  if (reverse) {
+    frage = currentCard.antwort;
+  } else {
+    frage = currentCard.frage;
+  }
+
+  document.getElementById("question").textContent = frage;
 
   document.getElementById("evaluation").textContent = "";
   document.getElementById("nextBtn").style.display = "none";
