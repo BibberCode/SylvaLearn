@@ -135,7 +135,7 @@ class AppNav extends HTMLElement {
     });
 
     // Active Button erkennen
-    let activeBtn = buttons[0];
+    let activeBtn = null;
 
     buttons.forEach(btn => {
       const target = normalize(btn.dataset.page);
@@ -149,7 +149,14 @@ class AppNav extends HTMLElement {
       }
     });
 
-    const initBubble = () => setActive(activeBtn);
+    const initBubble = () => {
+      if (activeBtn) {
+        setActive(activeBtn);
+      } else {
+        bubble.style.width = "0px";
+        bubble.style.transform = "translateX(0px)";
+      }
+    };
 
     if (document.fonts?.ready) {
       document.fonts.ready.then(() =>
