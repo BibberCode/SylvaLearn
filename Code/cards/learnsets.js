@@ -52,7 +52,7 @@ function addLearnset() {
     name: title,
     emoji: "📘",
     description,
-    qa: [{ frage: "Beispiel Frage", antwort: "Beispiel Antwort", sicherheit: 3 }],
+    qa: [{ sicherheit: 3 }],
     mode: "self-compare",
   }
   );

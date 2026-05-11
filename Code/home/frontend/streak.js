@@ -24,7 +24,7 @@ function updateStreak() {
 
     // Anzeige
     const el = document.getElementById("streak");
-    if (el) el.textContent = streak + " Tag(e)";
+    if (el) el.textContent = streak;
 }
 
 updateStreak();

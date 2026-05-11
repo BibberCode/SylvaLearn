@@ -56,6 +56,8 @@ function loadSet(name) {
   document.getElementById("currentSetName").textContent = set.name || "Unbenannt";
   document.getElementById("description").textContent = set.description || "Keine Beschreibung";
   document.getElementById("emoji").textContent = set.emoji || "📘";
+
+  setupEnterNavigation();
 }
 
 // ===============================
@@ -78,6 +80,8 @@ function addCard() {
   `;
 
   container.appendChild(card);
+
+  setupEnterNavigation(); // 🔥 wichtig
 }
 
 // ===============================
@@ -288,6 +292,46 @@ function initModeSwitch() {
       localStorage.setItem("learnsets", JSON.stringify(learnsets));
     });
   });
+}
+
+// ===============================
+// Enter Navigation
+// ===============================
+function setupEnterNavigation() {
+  const container = document.getElementById("cardContainer");
+  if (!container) return;
+
+  // wichtig: alte Listener vermeiden (clean approach)
+  container.querySelectorAll("input").forEach(input => {
+    input.onkeydown = null;
+
+    input.addEventListener("keydown", handleEnter);
+  });
+}
+
+function handleEnter(e) {
+  if (e.key !== "Enter") return;
+
+  e.preventDefault();
+
+  const container = document.getElementById("cardContainer");
+
+  const allInputs = Array.from(container.querySelectorAll("input"));
+  const index = allInputs.indexOf(e.target);
+
+  const next = allInputs[index + 1];
+
+  if (next) {
+    next.focus();
+    return;
+  }
+
+  addCard();
+
+  setTimeout(() => {
+    const inputs = container.querySelectorAll("input");
+    inputs[inputs.length - 2]?.focus();
+  }, 0);
 }
 
 // ===============================
