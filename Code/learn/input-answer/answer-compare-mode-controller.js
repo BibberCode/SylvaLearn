@@ -99,7 +99,11 @@ function nextCard() {
     return;
   }
 
+  const lastCard = currentCard
   currentCard = getWeightedCardSafe(set.qa);
+  if (cards.length > 1 && lastCard === currentCard) {
+    return nextCard();
+  }
 
   document.getElementById("userAnswer").value = "";
   showCard();
@@ -176,8 +180,10 @@ function updateFinishedCardsBar() {
 
 document.getElementById("nextBtn").onclick = nextCard;
 
-nextCard();
-updateFinishedCardsBar();
+setTimeout(() => {
+  nextCard();
+  updateFinishedCardsBar();
+}, 0);
 
 /* ---------------- CONFIDENCE ---------------- */
 
