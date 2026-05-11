@@ -321,15 +321,15 @@ body {
   flex: 1;
 
   font-size:
-    clamp(28px, 5vw, 44px);
+    clamp(28px, 5vw, 40px);
 
   line-height: 1.05;
 
-  font-weight: 900;
+  font-weight: 300;
 
   letter-spacing: -2px;
 
-  padding-left: 68px;
+  padding-left: 40px;
   padding-top: 2px;
 }
 
@@ -496,6 +496,11 @@ input:focus {
   backdrop-filter: blur(8px);
 
   width: fit-content;
+}
+
+#modeSwitchCenter {
+  margin: 0 auto;
+  justify-content: center;
 }
 
 .mode {

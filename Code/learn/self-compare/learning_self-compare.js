@@ -157,9 +157,9 @@ function nextCard() {
     return;
   }
 
-  const lastCard = currentCard;
+  let lastCard = currentCard;
   currentCard = getWeightedCard(set.qa);
-  if (cards.length > 1 && lastCard === currentCard) {
+  if (set.qa.length > 1 && lastCard === currentCard) {
     return nextCard();
   }
 

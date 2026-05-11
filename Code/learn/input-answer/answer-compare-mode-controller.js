@@ -14,6 +14,7 @@ import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compa
 /* ---------------- STATE ---------------- */
 
 let reverse = localStorage.getItem("reverse") === "true";
+let isReverse = null;
 
 /* ---------------- MODE SWITCH ---------------- */
 
@@ -47,34 +48,34 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("strictBtn")
     .addEventListener("click", () => setMode("strict"));
 
-  /* Reverse Button */
   const reverseBtn = document.getElementById("reverseBtn");
 
   reverseBtn.addEventListener("click", () => {
-    reverse = !reverse;
-    localStorage.setItem("reverse", reverse);
-
-    reverseBtn.classList.toggle("active", reverse);
+    isReverse = !isReverse;
+    reverseBtn.classList.toggle("active", isReverse);
   });
 
-  reverseBtn.classList.toggle("active", reverse);
+  reverseBtn.classList.toggle("active", isReverse);
 
   setMode(currentMode);
+
+  nextCard();
+  updateFinishedCardsBar();
 });
 
-/* ---------------- NEXT CARD ---------------- */
+/* ---------------- NEXT CARD (FIXED) ---------------- */
 
 let allFinished = null;
 
 function nextCard() {
   const name = localStorage.getItem("currentSetName");
-  const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
+  const sets = JSON.parse(localStorage.getItem("learnsets")) || [];
 
-  const set = learnsets.find(
+  const set = sets.find(
     s => (s.name || "").trim() === (name || "").trim()
   );
 
-  if (!set || !Array.isArray(set.qa) || set.qa.length === 0) return;
+  if (!set || !set.qa?.length) return;
 
   allFinished = set.qa.every(card => (card.sicherheit ?? 3) === 1);
 
@@ -91,7 +92,7 @@ function nextCard() {
 
     btn.onclick = () => {
       set.qa.forEach(card => (card.sicherheit = 3));
-      localStorage.setItem("learnsets", JSON.stringify(learnsets));
+      localStorage.setItem("learnsets", JSON.stringify(sets));
       window.location.href = "../learn.html";
     };
 
@@ -99,38 +100,46 @@ function nextCard() {
     return;
   }
 
-  const lastCard = currentCard
-  currentCard = getWeightedCardSafe(set.qa);
-  if (cards.length > 1 && lastCard === currentCard) {
-    return nextCard();
+  let newCard = getWeightedCardSafe(set.qa);
+
+  // ❌ KEINE REKURSION MEHR
+  let tries = 0;
+  while (newCard === currentCard && tries < 5) {
+    newCard = getWeightedCardSafe(set.qa);
+    tries++;
   }
 
+  lastCard = currentCard;
+  currentCard = newCard;
+
   document.getElementById("userAnswer").value = "";
+
+  if (isReverse) {
+    reverse = !reverse;
+    localStorage.setItem("reverse", reverse);
+    isReverse = null;
+  }
+
   showCard();
 }
 
-/* ---------------- WEIGHTED ---------------- */
+/* ---------------- WEIGHTED (STABILER) ---------------- */
 
 function getWeightedCardSafe(cards) {
   const pool = [];
 
   for (const card of cards) {
     const s = card.sicherheit ?? 3;
-    const weight = Math.max(1, Math.pow(2, s));
+
+    // stabilere Gewichtung (kein exponentieller Overkill)
+    const weight = Math.max(1, 5 - s);
 
     for (let i = 0; i < weight; i++) {
       pool.push(card);
     }
   }
 
-  let picked;
-
-  do {
-    picked = pool[Math.floor(Math.random() * pool.length)];
-  } while (picked === lastCard && pool.length > 1);
-
-  lastCard = picked;
-  return picked;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 /* ---------------- UI ---------------- */
@@ -153,9 +162,9 @@ function showCard() {
 
 function updateFinishedCardsBar() {
   const name = localStorage.getItem("currentSetName");
-  const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
+  const sets = JSON.parse(localStorage.getItem("learnsets")) || [];
 
-  const set = learnsets.find(
+  const set = sets.find(
     s => (s.name || "").trim() === (name || "").trim()
   );
 
@@ -167,7 +176,7 @@ function updateFinishedCardsBar() {
   const total = set.qa.length;
 
   const finished = set.qa.filter(
-    c => (c.sicherheit ?? 3) <= 1
+    c => (c.sicherheit ?? 3) === 1
   ).length;
 
   const percent = total ? (finished / total) * 100 : 0;
@@ -179,11 +188,6 @@ function updateFinishedCardsBar() {
 /* ---------------- EVENTS ---------------- */
 
 document.getElementById("nextBtn").onclick = nextCard;
-
-setTimeout(() => {
-  nextCard();
-  updateFinishedCardsBar();
-}, 0);
 
 /* ---------------- CONFIDENCE ---------------- */
 
