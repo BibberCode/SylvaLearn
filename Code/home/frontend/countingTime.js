@@ -10,7 +10,7 @@ function getToday() {
   return new Date().toLocaleDateString("sv-SE");
 }
 
-/* sauberer Reset nur 1x pro Tag */
+/* Tages-Reset */
 function ensureDay() {
   const today = getToday();
   const saved = localStorage.getItem(KEY_DATE);
@@ -21,7 +21,7 @@ function ensureDay() {
   }
 }
 
-/* sichere Number-Read Funktion */
+/* sichere Reads */
 function read(key) {
   return Number(localStorage.getItem(key) || 0);
 }
@@ -30,7 +30,7 @@ function write(key, value) {
   localStorage.setItem(key, String(value));
 }
 
-/* Tick basiert nur auf echter Zeitdifferenz */
+/* Zeitberechnung über echte Differenz */
 function tick() {
   ensureDay();
 
@@ -46,14 +46,11 @@ function tick() {
 
   if (diffMinutes <= 0) return;
 
-  const daily = read(KEY_DAILY) + diffMinutes;
-  const total = read(KEY_TOTAL) + diffMinutes;
-
-  write(KEY_DAILY, daily);
-  write(KEY_TOTAL, total);
+  write(KEY_DAILY, read(KEY_DAILY) + diffMinutes);
+  write(KEY_TOTAL, read(KEY_TOTAL) + diffMinutes);
 }
 
-/* Start/Stop stabilisiert */
+/* Start */
 function start() {
   if (running) return;
 
@@ -61,26 +58,27 @@ function start() {
   lastUpdate = Date.now();
   ensureDay();
 
-  interval = setInterval(tick, 1000);
+  interval = setInterval(() => {
+    if (running) tick();
+  }, 1000);
 }
 
+/* Stop (ohne Reset von lastUpdate) */
 function stop() {
   if (!running) return;
 
   running = false;
   clearInterval(interval);
   interval = null;
-  lastUpdate = null;
 }
 
-/* nur laufen wenn sichtbar */
-function shouldRun() {
-  return document.visibilityState === "visible";
-}
-
+/* Visibility steuert Zustand */
 function updateState() {
-  if (shouldRun()) start();
-  else stop();
+  if (document.visibilityState === "visible") {
+    start();
+  } else {
+    stop();
+  }
 }
 
 /* INIT */
@@ -88,5 +86,3 @@ ensureDay();
 updateState();
 
 document.addEventListener("visibilitychange", updateState);
-window.addEventListener("focus", updateState);
-window.addEventListener("blur", updateState);
