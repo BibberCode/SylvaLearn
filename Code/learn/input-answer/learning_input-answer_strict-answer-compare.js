@@ -9,13 +9,13 @@ function compareAnswer(userAnswer, currentCard, reverse) {
     ? currentCard.frage
     : currentCard.antwort;
 
-  userAnswer = (userAnswer || "").trim().toLowerCase();
-  const correct = (correctAnswer || "").trim().toLowerCase();
+  userAnswer = (userAnswer || "").trim();
+  const correct = (correctAnswer || "").trim();
 
   const isCorrect = userAnswer === correct;
 
   if (isCorrect) {
-    evalBox.textContent = "Richtig!";
+    evalBox.textContent = "Richtig! Antwort: " + correctAnswer;
     evalBox.style.color = "green";
   } else {
     evalBox.textContent = "Falsch! Richtige Antwort: " + correctAnswer;
@@ -52,3 +52,4 @@ export function setConfidenceStrict(level, currentCard, reverse) {
 
   localStorage.setItem("learnsets", JSON.stringify(learnsets));
 }
+

@@ -87,7 +87,7 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
     : currentCard.antwort;
 
   if (isCorrect) {
-    evalBox.textContent = "Richtig!";
+    evalBox.textContent = "Richtig! Antort: " + correctAnswer;
     evalBox.style.color = "green";
   } else {
     evalBox.textContent = "Falsch! Richtige Antwort: " + correctAnswer;
