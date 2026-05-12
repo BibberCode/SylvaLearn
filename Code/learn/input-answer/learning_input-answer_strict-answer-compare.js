@@ -9,8 +9,8 @@ function compareAnswer(userAnswer, currentCard, reverse) {
     ? currentCard.frage
     : currentCard.antwort;
 
-  userAnswer = (userAnswer || "").trim();
-  const correct = (correctAnswer || "").trim();
+  userAnswer = (userAnswer || "").trim().replace(/\s+/g, " ");
+  const correct = (correctAnswer || "").trim().replace(/\s+/g, " ");
 
   const isCorrect = userAnswer === correct;
 
