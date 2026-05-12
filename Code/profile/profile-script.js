@@ -171,6 +171,13 @@ window.addEventListener("DOMContentLoaded", () => {
       reader.readAsDataURL(file);
     });
   }
+
+  // Avarage
+  const dailyCards = localStorage.getItem("dailyCards")
+  const rightCards = localStorage.getItem("rightCards")
+
+  const avarage = Math.round((rightCards / dailyCards) * 100)
+  document.getElementById("avarage").textContent = avarage + "%"
 });
 
 

@@ -62,11 +62,11 @@
   <!-- AKTIONEN -->
   <div class="card" id="userAnswers">
     <div id="userAnswerBox" class="confidence-buttons" style="grid-template-columns: 1fr 1fr;">
-      <button id="userAnswerButton1" style="width: 100%;" class="button" onclick="compareAnswer('wrong')">
+      <button id="userAnswerButton1" style="width: 100%;" class="button">
         ❌ falsche Antwort
       </button>
 
-      <button id="userAnswerButton2" style="width: 100%;" class="button" onclick="compareAnswer('right')">
+      <button id="userAnswerButton2" style="width: 100%;" class="button">
         ✅ richtige Antwort
       </button>
     </div>
@@ -82,9 +82,8 @@
 <app-nav></app-nav>
 
 <!-- SCRIPT -->
-<script src="./learning_self-compare.js" defer></script>
+<script type="module" src="./learning_self-compare.js" defer></script>
 <script src="../../home/frontend/countingTime.js" defer></script>
-<script src="../../stats/avarageCards.js" defer></script>
 
 </body>
 </html>

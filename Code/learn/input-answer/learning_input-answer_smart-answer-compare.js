@@ -3,6 +3,8 @@ import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers";
 let extractor = null;
 let aiReady = false;
 
+import { rightAnswer, wrongAnswer } from "../../stats/avarageCards.js";
+
 /* ---------------- INIT ---------------- */
 
 export async function init() {
@@ -201,6 +203,8 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
     : "Falsch! Richtige Antwort: " + correctAnswer;
 
   evalBox.style.color = isCorrect ? "green" : "red";
+
+  if (isCorrect) { rightAnswer(); } else { wrongAnswer(); }
 
   const name = localStorage.getItem("currentSetName");
 

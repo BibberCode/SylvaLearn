@@ -1,3 +1,5 @@
+import { rightAnswer, wrongAnswer } from "../../stats/avarageCards.js";
+
 let currentCard = null;
 const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 let lastCard = null;
@@ -74,6 +76,13 @@ function compareAnswer(answer) {
 
   checkLevel();
 }
+
+document.getElementById("userAnswerButton1").onclick = () => {
+  compareAnswer("wrong");
+};
+document.getElementById("userAnswerButton2").onclick = () => {
+  compareAnswer("right");
+};
 
 function checkLevel() {
   const name = localStorage.getItem("currentSetName");
