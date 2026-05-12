@@ -6,6 +6,8 @@ let reverse = localStorage.getItem("reverse") === "true";
 
 nextCard();
 
+import { rightAnswer, wrongAnswer } from "../../stats/avarageCards.js";
+
 /* ---------------- INIT ---------------- */
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -66,8 +68,10 @@ let right = false;
 function compareAnswer(answer) {
   if (answer === "right") {
     right = true;
+    rightAnswer();
   } else if (answer === "wrong") {
     right = false;
+    wrongAnswer();
   }
 
   checkLevel();
