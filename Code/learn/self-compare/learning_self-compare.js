@@ -6,8 +6,6 @@ let reverse = localStorage.getItem("reverse") === "true";
 
 nextCard();
 
-import { rightAnswer, wrongAnswer } from "../../stats/avarageCards.js";
-
 /* ---------------- INIT ---------------- */
 
 window.addEventListener("DOMContentLoaded", () => {
