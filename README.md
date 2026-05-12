@@ -1,4 +1,4 @@
-# Learn App 🚀
+# SylvaLearn 🚀
 
 A Progressive Web App focused on confident, efficient, and smart learning 📚🧠
 

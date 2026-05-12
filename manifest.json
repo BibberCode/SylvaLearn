@@ -1,6 +1,6 @@
 {
-  "name": "Lern App",
-  "short_name": "LernApp",
+  "name": "SylvaLearn",
+  "short_name": "Sylva",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
