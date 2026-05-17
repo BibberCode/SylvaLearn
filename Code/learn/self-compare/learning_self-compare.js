@@ -1,16 +1,45 @@
-import { rightAnswer, wrongAnswer } from "../../stats/avarageCards.js";
+import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
+import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
 
 let currentCard = null;
-const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 let lastCard = null;
 
-let reverse = localStorage.getItem("reverse") === "true";
+let allCards = 0;
+let rightCards = 0;
 
-nextCard();
+let reverse = localStorage.getItem("reverse") === "true";
+let level = 3;
+
+/* ---------------- STORAGE HELPERS ---------------- */
+
+function getLearnsets() {
+  return JSON.parse(localStorage.getItem("learnsets")) || [];
+}
+
+function getSet() {
+  const name = localStorage.getItem("currentSetName") || "";
+
+  return getLearnsets().find(
+    s => (s.name || "").trim() === name.trim()
+  );
+}
 
 /* ---------------- INIT ---------------- */
 
+function init() {
+  const set = getSet();
+  if (!set) return;
+
+  allCards = set.allCardsAverage ?? 0;
+  rightCards = set.rightCardsAverage ?? 0;
+
+  updateFinishedCardsBar();
+  nextCard();
+}
+
 window.addEventListener("DOMContentLoaded", () => {
+  init();
+
   /* Reverse Button */
   const reverseBtn = document.getElementById("reverseBtn");
 
@@ -22,7 +51,150 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   reverseBtn.classList.toggle("active", reverse);
+
+  document.getElementById("userAnswerButton1").onclick = () => {
+    compareAnswer("wrong");
+  };
+
+  document.getElementById("userAnswerButton2").onclick = () => {
+    compareAnswer("right");
+  };
 });
+
+/* ---------------- SAVE ---------------- */
+
+function save() {
+  const learnsets = getLearnsets();
+  const set = getSet();
+
+  if (!set) return;
+
+  set.allCardsAverage = allCards;
+  set.rightCardsAverage = rightCards;
+
+  localStorage.setItem("learnsets", JSON.stringify(learnsets));
+}
+
+/* ---------------- ANSWERS ---------------- */
+
+function compareAnswer(answer) {
+  if (answer === "right") {
+    rightAnswerAll();
+    rightAnswerAlone();
+  } else {
+    wrongAnswerAll();
+    wrongAnswerAlone();
+  }
+
+  checkLevel();
+}
+
+/* ---------------- LEVEL CHECK ---------------- */
+
+function checkLevel() {
+  const set = getSet();
+  if (!set || !currentCard) return;
+
+  const frage = reverse ? currentCard.antwort : currentCard.frage;
+
+  const card = set.qa.find(q => q.frage === frage);
+
+  if (card) {
+    if (card) {
+      card.sicherheit = level ?? 3;
+    }
+
+    localStorage.setItem("learnsets", JSON.stringify(getLearnsets()));
+  }
+
+  updateFinishedCardsBar();
+  nextCard();
+}
+
+/* ---------------- CONFIDENCE ---------------- */
+
+document.querySelectorAll("[data-level]").forEach(btn => {
+  btn.onclick = () => {
+    level = Number(btn.dataset.level);
+
+    const antwort = reverse
+      ? currentCard.frage
+      : currentCard.antwort;
+
+    document.getElementById("confidenceBox").style.display = "none";
+    document.getElementById("userAnswers").style.display = "block";
+
+    const evalBox = document.getElementById("evaluation");
+    evalBox.style.display = "block";
+    evalBox.textContent = "Antwort: " + antwort;
+  };
+});
+
+/* ---------------- FINISHED BAR ---------------- */
+
+function updateFinishedCardsBar() {
+  const set = getSet();
+  if (!set) return;
+
+  const total = set.qa.length;
+  const finished = set.qa.filter(
+    c => (c.sicherheit ?? 3) === 1
+  ).length;
+
+  const percent = total ? (finished / total) * 100 : 0;
+
+  document.getElementById("finishedCardsBar").style.width =
+    percent + "%";
+
+  document.getElementById("finishedCardsText").textContent =
+    `${finished} / ${total} geschafft`;
+}
+
+/* ---------------- NEXT CARD ---------------- */
+
+function nextCard() {
+  const set = getSet();
+  if (!set || !set.qa.length) return;
+
+  const finished = set.qa.filter(
+    c => (c.sicherheit ?? 3) === 1
+  );
+
+  if (finished.length === set.qa.length) {
+    document.getElementById("question").textContent =
+      "Alle Karten geschafft 🎉";
+    return;
+  }
+
+  currentCard = getWeightedCard(set.qa);
+
+  showCard();
+}
+
+/* ---------------- WEIGHTED PICK ---------------- */
+
+function getWeightedCard(cards) {
+  const pool = [];
+
+  for (const card of cards) {
+    const s = card.sicherheit ?? 3;
+    const weight = Math.pow(2, s);
+
+    for (let i = 0; i < weight; i++) {
+      pool.push(card);
+    }
+  }
+
+  let picked;
+
+  do {
+    picked = pool[Math.floor(Math.random() * pool.length)];
+  } while (picked === lastCard && pool.length > 1);
+
+  lastCard = picked;
+
+  return picked;
+}
 
 /* ---------------- UI ---------------- */
 
@@ -39,181 +211,3 @@ function showCard() {
   document.getElementById("userAnswers").style.display = "none";
   document.getElementById("confidenceBox").style.display = "block";
 }
-
-function updateFinishedCardsBar() {
-  const name = localStorage.getItem("currentSetName");
-  const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
-
-  if (!set || !set.qa.length) return;
-
-  const total = set.qa.length;
-
-  // Level 1 = fertig (nach deiner Änderung)
-  const finished = set.qa.filter(c => (c.sicherheit ?? 3) === 1).length;
-
-  const percent = (finished / total) * 100;
-
-  document.getElementById("finishedCardsBar").style.width = percent + "%";
-  document.getElementById("finishedCardsText").textContent =
-    `${finished} / ${total} geschafft`;
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  updateFinishedCardsBar();
-});
-
-/* ---------------- Antwort prüfen ---------------- */
-
-let right = false;
-function compareAnswer(answer) {
-  if (answer === "right") {
-    right = true;
-    rightAnswer();
-  } else if (answer === "wrong") {
-    right = false;
-    wrongAnswer();
-  }
-
-  checkLevel();
-}
-
-document.getElementById("userAnswerButton1").onclick = () => {
-  compareAnswer("wrong");
-};
-document.getElementById("userAnswerButton2").onclick = () => {
-  compareAnswer("right");
-};
-
-function checkLevel() {
-  const name = localStorage.getItem("currentSetName");
-  const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
-
-  const frage = reverse
-    ? currentCard.antwort
-    : currentCard.frage;
-
-  if (set) {
-    const card = set.qa.find(q => q.frage === frage);
-
-    if (card && right) {
-      card.sicherheit = level;
-      localStorage.setItem("learnsets", JSON.stringify(learnsets));
-    }
-    else if (card && !right) {
-      card.sicherheit = 5; // direkt auf "schlecht" setzen, wenn die Antwort falsch war
-      localStorage.setItem("learnsets", JSON.stringify(learnsets));
-    }
-  }
-
-  updateFinishedCardsBar();
-  nextCard();
-}
-
-/* ---------------- CONFIDENCE ---------------- */
-
-let level = 3; // Standardwert
-document.querySelectorAll("[data-level]").forEach(btn => {
-  btn.onclick = () => {
-    level = Number(btn.dataset.level);
-
-    const antwort = reverse
-    ? currentCard.frage
-    : currentCard.antwort;
-
-    document.getElementById("confidenceBox").style.display = "none";
-    document.getElementById("userAnswers").style.display = "block";
-
-    const evalBox = document.getElementById("evaluation");
-    evalBox.style.display = "block";
-    evalBox.textContent = "Antort: " + antwort;
-  };
-});
-
-/* ---------------- NEXT CARD ---------------- */
-
-function nextCard() {
-  const name = localStorage.getItem("currentSetName");
-  const set = learnsets.find(s => (s.name || "").trim() === (name || "").trim());
-
-  if (!set || !set.qa.length) return;
-
-  const finishedCards = set.qa.filter(card => (card.sicherheit ?? 3) === 1);
-
-  if (finishedCards.length === set.qa.length) {
-    const question = document.getElementById("question");
-    const userAnswers = document.getElementById("userAnswerBox");
-    const answerBtn1 = document.getElementById("userAnswerButton1");
-    const answerBtn2 = document.getElementById("userAnswerButton2");
-    const box = document.getElementById("confidenceBox");
-    const evalBox = document.getElementById("evaluation");
-
-    question.textContent = "Alle Karten geschafft 🎉";
-    box.style.display = "none";
-    evalBox.style.display = "none";
-
-    userAnswers.style.gridTemplateColumns = "1fr"; // auf eine Spalte ändern
-    answerBtn1.style.display = "none";
-    answerBtn2.textContent = "Zurück zur Übersicht";
-
-    answerBtn2.onclick = () => {
-      set.qa.forEach(card => {
-        card.sicherheit = 3;
-      });
-
-      localStorage.setItem("learnsets", JSON.stringify(learnsets));
-
-      window.location.href = "../learn.html";
-    };
-
-    return;
-  }
-
-  let lastCard = currentCard;
-  currentCard = getWeightedCard(set.qa);
-  if (set.qa.length > 1 && lastCard === currentCard) {
-    return nextCard();
-  }
-
-  
-  showCard();
-}
-
-/* ---------------- WEIGHTED RANDOM ---------------- */
-
-function getWeightedCard(cards) {
-  const pool = [];
-
-  for (const card of cards) {
-    const s = card.sicherheit ?? 3;
-    const weight = Math.pow(2, s);
-
-    for (let i = 0; i < weight; i++) {
-      pool.push(card);
-    }
-  }
-
-  if (pool.length === 0) {
-    return cards[Math.floor(Math.random() * cards.length)];
-  }
-
-  let picked;
-
-  do {
-    picked = pool[Math.floor(Math.random() * pool.length)];
-  } while (picked === lastCard && pool.length > 1);
-
-  lastCard = picked;
-
-  return picked;
-}
-
-function resetAllCards() {
-  learnsets.forEach(set => {
-    set.qa.forEach(card => {
-      card.sicherheit = 3;
-    });
-  });
-  localStorage.setItem("learnsets", JSON.stringify(learnsets));
-}
-
-window.addEventListener("beforeunload", resetAllCards);

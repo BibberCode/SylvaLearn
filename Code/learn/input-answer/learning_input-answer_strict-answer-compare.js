@@ -1,4 +1,5 @@
-import { rightAnswer, wrongAnswer } from "../../stats/avarageCards.js";
+import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
+import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
 
 /* ---------------- Antwort prüfen ---------------- */
 
@@ -19,11 +20,13 @@ function compareAnswer(userAnswer, currentCard, reverse) {
   if (isCorrect) {
     evalBox.textContent = "Richtig! Antwort: " + correctAnswer;
     evalBox.style.color = "green";
-    rightAnswer();
+    rightAnswerAll();
+    rightAnswerAlone();
   } else {
     evalBox.textContent = "Falsch! Richtige Antwort: " + correctAnswer;
     evalBox.style.color = "red";
-    wrongAnswer();
+    wrongAnswerAll();
+    wrongAnswerAlone();
   }
 
   return isCorrect;

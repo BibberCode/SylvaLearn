@@ -3,7 +3,8 @@ import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers";
 let extractor = null;
 let aiReady = false;
 
-import { rightAnswer, wrongAnswer } from "../../stats/avarageCards.js";
+import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
+import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
 
 /* ---------------- INIT ---------------- */
 
@@ -204,7 +205,7 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
 
   evalBox.style.color = isCorrect ? "green" : "red";
 
-  if (isCorrect) { rightAnswer(); } else { wrongAnswer(); }
+  if (isCorrect) { rightAnswerAll(); rightAnswerAlone(); } else { wrongAnswerAll(); rightAnswerAlone(); }
 
   const name = localStorage.getItem("currentSetName");
 

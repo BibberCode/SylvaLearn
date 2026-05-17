@@ -54,6 +54,8 @@ function addLearnset() {
     description,
     qa: [{ sicherheit: 3 }],
     mode: "self-compare",
+    allCardsAverage: 0,
+    rightCardsAverage: 0,
   }
   );
 
