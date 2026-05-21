@@ -173,11 +173,20 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // Avarage
-  const dailyCards = localStorage.getItem("dailyCardsAll")
-  const rightCards = localStorage.getItem("rightCardsAll")
+  const dailyCards = Number(localStorage.getItem("dailyCardsAll")) || 0;
+  const rightCards = Number(localStorage.getItem("rightCardsAll")) || 0;
 
-  const avarage = Math.round((rightCards / dailyCards) * 100)
-  document.getElementById("avarage").textContent = avarage + "%"
+  const avarage = Math.round((rightCards / dailyCards) * 100);
+
+  const avarageEl = document.getElementById("avarage");
+
+  if (avarageEl) {
+    if (!isNaN(avarage) && dailyCards > 0) {
+      avarageEl.textContent = avarage + "%";
+    } else {
+      avarageEl.textContent = "0%";
+    }
+  }
 });
 
 
