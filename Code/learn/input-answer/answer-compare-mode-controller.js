@@ -227,6 +227,7 @@ function showCard() {
   const evaluation = document.getElementById("evaluation");
   const nextBtn = document.getElementById("nextBtn");
   const confidenceBox = document.getElementById("confidenceBox");
+  const evalBox = document.getElementById("evaluation");
 
   if (evaluation) {
     evaluation.textContent = "";
@@ -238,6 +239,10 @@ function showCard() {
 
   if (confidenceBox) {
     confidenceBox.style.display = "block";
+  }
+
+  if (evalBox) {
+    evalBox.style.display = "none";
   }
 }
 

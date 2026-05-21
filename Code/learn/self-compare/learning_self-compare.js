@@ -168,6 +168,9 @@ function nextCard() {
 
   currentCard = getWeightedCard(set.qa);
 
+  const evalBox = document.getElementById("evaluation");
+  evalBox.style.display = "none";
+
   showCard();
 }
 
