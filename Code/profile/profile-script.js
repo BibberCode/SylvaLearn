@@ -183,10 +183,12 @@ window.addEventListener("DOMContentLoaded", () => {
   if (avarageEl) {
     if (!isNaN(avarage) && dailyCards > 0) {
       avarageEl.textContent = avarage + "%";
-    } else {
-      avarageEl.textContent = "0%";
-    }
+    } 
+  } 
+  else {
+    avarageEl.textContent = "0%";
   }
+
 });
 
 
