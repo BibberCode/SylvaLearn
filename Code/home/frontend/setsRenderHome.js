@@ -53,13 +53,11 @@ function renderLearnsetsEdit() {
     return;
   }
 
-  const average = getAveragePercent();
-
   learnsets.forEach(set => {
     const card = createCard(
       set,
       `<p class="small-text" style="margin-top:8px;">
-        ${average}%
+        ${set.description || ""}
       </p>`
     );
 
@@ -88,11 +86,13 @@ function renderLearnsetsLearn() {
     return;
   }
 
+  const average = getAveragePercent();
+
   learnsets.forEach(set => {
     const card = createCard(
       set,
       `<p class="small-text" style="margin-top:8px;">
-        ${set.description || ""}
+        ${average}%
       </p>`
     );
 
