@@ -175,7 +175,7 @@ function nextCard() {
 
   if (finished.length === set.qa.length) {
     const question = document.getElementById("question");
-    const input = document.getElementById("userAnswer");
+    const input = document.getElementById("userAnswers");
     const confidence = document.getElementById("confidenceBox");
     const evaluation = document.getElementById("evaluation");
     const reverseBtn = document.getElementById("reverseBtn")
@@ -193,7 +193,7 @@ function nextCard() {
 
       btn.onclick = () => {
 
-        learnsets.qa.forEach(card => {
+        set.qa.forEach(card => {
           card.sicherheit = 3;
         });
 
@@ -208,6 +208,10 @@ function nextCard() {
 
     return;
   }
+
+  const availableCards = set.qa.filter(
+    c => (c.sicherheit ?? 3) > 1
+  );
 
   currentCard = getWeightedCard(availableCards);
 
