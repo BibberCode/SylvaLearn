@@ -128,8 +128,24 @@ function saveAll() {
   localStorage.setItem("learnsets", JSON.stringify(learnsets));
 
   allowToExit = true;
-  window.location.href = "./cards.html";
+
+  saveName(); 
+  saveDescription();
 }
+
+function switchPage(){
+  window.location.href = "./cards.html"
+}
+
+// ===============================
+// Event Input Changes
+// ===============================
+
+document.addEventListener("focusout", (e) => {
+    if (e.target.matches("input")) {
+      saveAll();
+    }
+});
 
 // ===============================
 // SET NAME / DESCRIPTION
