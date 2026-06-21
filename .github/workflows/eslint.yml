@@ -17,6 +17,5 @@ jobs:
         with:
           node-version: 20
 
-      - run: npm install
-
+      - run: npm install eslint
       - run: npx eslint .
