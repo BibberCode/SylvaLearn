@@ -102,9 +102,7 @@ function nextCard() {
     const reverseBtn = document.getElementById("reverseBtn")
     const btn = document.getElementById("nextBtnButton");
 
-    if (question) {
-      question.textContent = "Alle Karten geschafft 🎉";
-    }
+    if (question) { question.textContent = "Alle Karten geschafft 🎉"; }
 
     if (input) input.style.display = "none";
     if (confidence) confidence.style.display = "none";

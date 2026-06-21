@@ -92,19 +92,30 @@ function compareAnswer(answer) {
 /* ---------------- LEVEL CHECK ---------------- */
 
 function checkLevel() {
-  const set = getSet();
-  if (!set || !currentCard) return;
+  const learnsets = getLearnsets();
+  const setName = localStorage.getItem("currentSetName") || "";
 
-  const frage = reverse ? currentCard.antwort : currentCard.frage;
+  const setIndex = learnsets.findIndex(
+    s => (s.name || "").trim() === setName.trim()
+  );
+
+  if (setIndex === -1 || !currentCard) return;
+
+  const set = learnsets[setIndex];
+
+  const frage = reverse
+    ? currentCard.antwort
+    : currentCard.frage;
 
   const card = set.qa.find(q => q.frage === frage);
 
   if (card) {
-    if (card) {
-      card.sicherheit = level ?? 3;
-    }
+    card.sicherheit = level ?? 3;
 
-    localStorage.setItem("learnsets", JSON.stringify(getLearnsets()));
+    localStorage.setItem(
+      "learnsets",
+      JSON.stringify(learnsets)
+    );
   }
 
   updateFinishedCardsBar();
@@ -152,6 +163,8 @@ function updateFinishedCardsBar() {
 
 /* ---------------- NEXT CARD ---------------- */
 
+const learnsets = getLearnsets();
+
 function nextCard() {
   const set = getSet();
   if (!set || !set.qa.length) return;
@@ -161,12 +174,42 @@ function nextCard() {
   );
 
   if (finished.length === set.qa.length) {
-    document.getElementById("question").textContent =
-      "Alle Karten geschafft 🎉";
+    const question = document.getElementById("question");
+    const input = document.getElementById("userAnswer");
+    const confidence = document.getElementById("confidenceBox");
+    const evaluation = document.getElementById("evaluation");
+    const reverseBtn = document.getElementById("reverseBtn")
+    const btn = document.getElementById("nextBtnButton");
+
+    if (question) { question.textContent = "Alle Karten geschafft 🎉"; }
+
+    if (input) input.style.display = "none";
+    if (confidence) confidence.style.display = "none";
+    if (evaluation) evaluation.style.display = "none";
+    if (reverseBtn) reverseBtn.style.display = "none"
+
+    if (btn) {
+      btn.style.display = "block";
+
+      btn.onclick = () => {
+
+        learnsets.qa.forEach(card => {
+          card.sicherheit = 3;
+        });
+
+        localStorage.setItem(
+          "learnsets",
+          JSON.stringify(learnsets)
+        );
+
+        window.location.href = "../learn.html";
+      };
+    }
+
     return;
   }
 
-  currentCard = getWeightedCard(set.qa);
+  currentCard = getWeightedCard(availableCards);
 
   const evalBox = document.getElementById("evaluation");
   evalBox.style.display = "none";
