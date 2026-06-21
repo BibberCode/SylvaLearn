@@ -74,6 +74,7 @@ The project is open source and welcomes contributions.
 * 📈 Advanced statistics per card
 * 🧠 Improved spaced repetition algorithm
 * 🎮 Gamification system
+* Export/Import Learnsets
 
 ---
 
