@@ -4,18 +4,12 @@ let currentMode = localStorage.getItem("mode") || "smart";
 let currentCard = null;
 let lastCard = null;
 
-const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
+let reverse = localStorage.getItem("reverse") === "true";
 
 /* ---------------- IMPORTS ---------------- */
 
 import { setConfidenceSmart } from "./learning_input-answer_smart-answer-compare.js";
 import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js";
-
-/* ---------------- STATE ---------------- */
-
-// nur für die NÄCHSTE Karte
-let reverseNext = false;
-let currentReverse = false;
 
 /* ---------------- MODE SWITCH ---------------- */
 
@@ -32,10 +26,10 @@ async function setMode(mode) {
   }
 
   document.getElementById("smartBtn")
-    .classList.toggle("active", currentMode === "smart");
+    ?.classList.toggle("active", currentMode === "smart");
 
   document.getElementById("strictBtn")
-    .classList.toggle("active", currentMode === "strict");
+    ?.classList.toggle("active", currentMode === "strict");
 
   currentModule?.init?.();
 }
@@ -45,17 +39,18 @@ async function setMode(mode) {
 window.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("smartBtn")
-    .addEventListener("click", () => setMode("smart"));
+    ?.addEventListener("click", () => setMode("smart"));
 
   document.getElementById("strictBtn")
-    .addEventListener("click", () => setMode("strict"));
+    ?.addEventListener("click", () => setMode("strict"));
 
   const reverseBtn = document.getElementById("reverseBtn");
 
-  reverseBtn.addEventListener("click", () => {
-    reverseNext = !reverseNext;
+  reverseBtn?.addEventListener("click", () => {
+    reverse = !reverse;
+    localStorage.setItem("reverse", reverse);
 
-    reverseBtn.classList.toggle("active", reverseNext);
+    reverseBtn.classList.toggle("active", reverse);
   });
 
   await setMode(currentMode);
@@ -66,14 +61,11 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 /* ---------------- NEXT CARD ---------------- */
 
-let allFinished = null;
-
 function nextCard() {
 
   const name = localStorage.getItem("currentSetName");
 
   let sets = [];
-
   try {
     sets = JSON.parse(localStorage.getItem("learnsets")) || [];
   } catch {
@@ -86,7 +78,7 @@ function nextCard() {
 
   if (!set || !set.qa?.length) return;
 
-  allFinished = set.qa.every(
+  const allFinished = set.qa.every(
     card => (card.sicherheit ?? 3) === 1
   );
 
@@ -99,53 +91,47 @@ function nextCard() {
     const confidence = document.getElementById("confidenceBox");
     const evaluation = document.getElementById("evaluation");
     const compareModeBtns = document.getElementById("compareModeBtns");
-    const reverseBtn = document.getElementById("reverseBtn")
+    const reverseBtn = document.getElementById("reverseBtn");
     const btn = document.getElementById("nextBtnButton");
 
-    if (question) { question.textContent = "Alle Karten geschafft 🎉"; }
+    if (question) question.textContent = "Alle Karten geschafft 🎉";
 
     if (input) input.style.display = "none";
     if (confidence) confidence.style.display = "none";
     if (evaluation) evaluation.style.display = "none";
     if (compareModeBtns) compareModeBtns.style.display = "none";
-    if (reverseBtn) reverseBtn.style.display = "none"
+    if (reverseBtn) reverseBtn.style.display = "none";
 
     if (btn) {
       btn.textContent = "Zurück zur Übersicht";
 
       btn.onclick = () => {
 
-        set.qa.forEach(card => {
-          card.sicherheit = 3;
-        });
+        const allSets = JSON.parse(localStorage.getItem("learnsets")) || [];
 
-        localStorage.setItem(
-          "learnsets",
-          JSON.stringify(sets)
+        const setIndex = allSets.findIndex(
+          s => (s.name || "").trim() === (name || "").trim()
         );
+
+        if (setIndex !== -1) {
+          allSets[setIndex].qa.forEach(card => {
+            card.sicherheit = 3;
+          });
+
+          localStorage.setItem("learnsets", JSON.stringify(allSets));
+        }
 
         window.location.href = "../learn.html";
       };
     }
 
     updateFinishedCardsBar();
-
     return;
   }
 
   /* ---------- CARD PICK ---------- */
 
-  let newCard = getWeightedCardSafe(set.qa);
-
-  let tries = 0;
-
-  while (
-    newCard?.frage === currentCard?.frage &&
-    tries < 10
-  ) {
-    newCard = getWeightedCardSafe(set.qa);
-    tries++;
-  }
+  const newCard = getWeightedCardSafe(set.qa, currentCard);
 
   lastCard = currentCard;
   currentCard = newCard;
@@ -153,20 +139,12 @@ function nextCard() {
   /* ---------- INPUT RESET ---------- */
 
   const input = document.getElementById("userAnswer");
+  if (input) input.value = "";
 
-  if (input) {
-    input.value = "";
-  }
-
-  /* ---------- REVERSE ---------- */
-
-  currentReverse = reverseNext;
-
-  reverseNext = false;
+  /* ---------- REVERSE UI ---------- */
 
   const reverseBtn = document.getElementById("reverseBtn");
-
-  reverseBtn?.classList.remove("active");
+  reverseBtn?.classList.toggle("active", reverse);
 
   /* ---------- SHOW ---------- */
 
@@ -189,10 +167,10 @@ function getWeightedCardSafe(cards, exclude = null) {
     let weight = 1;
 
     if (s === 5) weight = 8;
-    if (s === 4) weight = 5;
-    if (s === 3) weight = 3;
-    if (s === 2) weight = 2;
-    if (s === 1) weight = 1;
+    else if (s === 4) weight = 5;
+    else if (s === 3) weight = 3;
+    else if (s === 2) weight = 2;
+    else if (s === 1) weight = 1;
 
     for (let i = 0; i < weight; i++) {
       pool.push(card);
@@ -201,9 +179,7 @@ function getWeightedCardSafe(cards, exclude = null) {
 
   if (pool.length === 0) return null;
 
-  return pool[
-    Math.floor(Math.random() * pool.length)
-  ];
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 /* ---------------- UI ---------------- */
@@ -212,7 +188,7 @@ function showCard() {
 
   if (!currentCard) return;
 
-  const frage = currentReverse
+  const frage = reverse
     ? currentCard.antwort
     : currentCard.frage;
 
@@ -225,23 +201,10 @@ function showCard() {
   const evaluation = document.getElementById("evaluation");
   const nextBtn = document.getElementById("nextBtn");
   const confidenceBox = document.getElementById("confidenceBox");
-  const evalBox = document.getElementById("evaluation");
 
-  if (evaluation) {
-    evaluation.textContent = "";
-  }
-
-  if (nextBtn) {
-    nextBtn.style.display = "none";
-  }
-
-  if (confidenceBox) {
-    confidenceBox.style.display = "block";
-  }
-
-  if (evalBox) {
-    evalBox.style.display = "none";
-  }
+  if (evaluation) evaluation.textContent = "";
+  if (nextBtn) nextBtn.style.display = "none";
+  if (confidenceBox) confidenceBox.style.display = "block";
 }
 
 /* ---------------- BAR ---------------- */
@@ -251,7 +214,6 @@ function updateFinishedCardsBar() {
   const name = localStorage.getItem("currentSetName");
 
   let sets = [];
-
   try {
     sets = JSON.parse(localStorage.getItem("learnsets")) || [];
   } catch {
@@ -273,23 +235,16 @@ function updateFinishedCardsBar() {
     c => (c.sicherheit ?? 3) === 1
   ).length;
 
-  const percent = total
-    ? (finished / total) * 100
-    : 0;
+  const percent = total ? (finished / total) * 100 : 0;
 
   bar.style.width = percent + "%";
-
-  text.textContent =
-    `${finished} / ${total} geschafft`;
+  text.textContent = `${finished} / ${total} geschafft`;
 }
 
 /* ---------------- EVENTS ---------------- */
 
-const nextBtn = document.getElementById("nextBtn");
-
-if (nextBtn) {
-  nextBtn.onclick = nextCard;
-}
+document.getElementById("nextBtn")
+  ?.addEventListener("click", nextCard);
 
 /* ---------------- CONFIDENCE ---------------- */
 
@@ -302,34 +257,18 @@ document.querySelectorAll("[data-level]").forEach(btn => {
     if (!currentCard) return;
 
     if (currentMode === "smart") {
-      setConfidenceSmart(
-        level,
-        currentCard,
-        currentReverse
-      );
+      setConfidenceSmart(level, currentCard, reverse);
     }
 
     if (currentMode === "strict") {
-      setConfidenceStrict(
-        level,
-        currentCard,
-        currentReverse
-      );
+      setConfidenceStrict(level, currentCard, reverse);
     }
 
-    const confidenceBox =
-      document.getElementById("confidenceBox");
+    const confidenceBox = document.getElementById("confidenceBox");
+    if (confidenceBox) confidenceBox.style.display = "none";
 
-    const nextBtn =
-      document.getElementById("nextBtn");
-
-    if (confidenceBox) {
-      confidenceBox.style.display = "none";
-    }
-
-    if (nextBtn) {
-      nextBtn.style.display = "block";
-    }
+    const nextBtn = document.getElementById("nextBtn");
+    if (nextBtn) nextBtn.style.display = "block";
 
     updateFinishedCardsBar();
   };
