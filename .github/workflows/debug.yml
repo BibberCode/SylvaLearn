@@ -1,0 +1,22 @@
+name: Debug Repo
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show files
+        run: |
+          echo "=== FILE TREE ==="
+          find .
+
+      - name: Show JS files
+        run: |
+          echo "=== JS FILES ==="
+          find . -name "*.js"
