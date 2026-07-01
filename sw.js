@@ -3,9 +3,8 @@ const CACHE_NAME = "lernapp-v1";
 const urlsToCache = [
   "/",
   "/index.html",
-  "/code/home/frontend/style.css",
-  "/app.js",
-  "/icon-192.png"
+  "/Code/home/frontend/style.css",
+  "/app.js"
 ];
 
 // Installieren (Dateien speichern)

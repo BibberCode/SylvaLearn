@@ -177,7 +177,7 @@ function getWeightedCardSafe(cards, exclude = null) {
     }
   }
 
-  if (pool.length === 0) return null;
+  if (pool.length === 0) return cards.find(card => card !== exclude) ?? cards[0] ?? null;
 
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -250,7 +250,7 @@ document.getElementById("nextBtn")
 
 document.querySelectorAll("[data-level]").forEach(btn => {
 
-  btn.onclick = () => {
+  btn.onclick = async () => {
 
     const level = Number(btn.dataset.level);
 
@@ -261,7 +261,7 @@ document.querySelectorAll("[data-level]").forEach(btn => {
     }
 
     if (currentMode === "strict") {
-      setConfidenceStrict(level, currentCard, reverse);
+      await setConfidenceStrict(level, currentCard, reverse);
     }
 
     const confidenceBox = document.getElementById("confidenceBox");

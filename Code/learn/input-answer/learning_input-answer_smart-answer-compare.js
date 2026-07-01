@@ -205,7 +205,7 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
 
   evalBox.style.color = isCorrect ? "green" : "red";
 
-  if (isCorrect) { rightAnswerAll(); rightAnswerAlone(); } else { wrongAnswerAll(); rightAnswerAlone(); }
+  if (isCorrect) { rightAnswerAll(); rightAnswerAlone(); } else { wrongAnswerAll(); wrongAnswerAlone(); }
 
   const name = localStorage.getItem("currentSetName");
 

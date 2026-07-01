@@ -163,8 +163,6 @@ function updateFinishedCardsBar() {
 
 /* ---------------- NEXT CARD ---------------- */
 
-const learnsets = getLearnsets();
-
 function nextCard() {
   const set = getSet();
   if (!set || !set.qa.length) return;
@@ -193,9 +191,16 @@ function nextCard() {
 
       btn.onclick = () => {
 
-        set.qa.forEach(card => {
-          card.sicherheit = 3;
-        });
+        const learnsets = getLearnsets();
+        const setIndex = learnsets.findIndex(
+          item => (item.name || "").trim() === (localStorage.getItem("currentSetName") || "").trim()
+        );
+
+        if (setIndex !== -1) {
+          learnsets[setIndex].qa.forEach(card => {
+            card.sicherheit = 3;
+          });
+        }
 
         localStorage.setItem(
           "learnsets",

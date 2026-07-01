@@ -4,7 +4,7 @@ import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlon
 /* ---------------- Antwort prüfen ---------------- */
 
 let right = false;
-function compareAnswer(userAnswer, currentCard, reverse) {
+async function compareAnswer(userAnswer, currentCard, reverse) {
   const evalBox = document.getElementById("evaluation");
   evalBox.style.display = "block";
 
@@ -33,10 +33,10 @@ function compareAnswer(userAnswer, currentCard, reverse) {
 }
 /* ---------------- CONFIDENCE ---------------- */
 
-export function setConfidenceStrict(level, currentCard, reverse) {
+export async function setConfidenceStrict(level, currentCard, reverse) {
   const userAnswer = document.getElementById("userAnswer").value;
 
-  const isCorrect = compareAnswer(userAnswer, currentCard, reverse);
+  const isCorrect = await compareAnswer(userAnswer, currentCard, reverse);
 
   const name = localStorage.getItem("currentSetName");
   const learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
