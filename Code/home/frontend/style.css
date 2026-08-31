@@ -46,6 +46,47 @@
 
 html {
   scroll-behavior: smooth;
+  /* Verhindert Sprung durch unterschiedliche Scrollbar-Präsenz:
+     reserviert Platz für Scrollbar auf ALLEN Seiten gleich.
+     both-edges hält zentrierte Nav exakt mittig. */
+  scrollbar-gutter: stable both-edges;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
+}
+
+/* Cross-Document View Transitions (MPA) – weicher Seitenwechsel
+   ohne harten Reload-Flash. Nav wird als persistentes Element behandelt. */
+@view-transition {
+  navigation: auto;
+}
+
+/* Nav als persistentes View-Transition-Element – verhindert
+   dass die fixierte Leiste beim MPA-Wechsel neu gerendert/flackert.
+   Bubble selbst gleitet per eigenem View-Transition-Name. */
+app-nav {
+  view-transition-name: app-nav;
+}
+
+/* View Transition Timings – Bubble soll wie im Same-Document gleiten */
+::view-transition-group(app-nav) {
+  animation-duration: 0.22s;
+  animation-timing-function: ease;
+}
+
+::view-transition-group(app-nav-bubble) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(app-nav-bubble),
+::view-transition-new(app-nav-bubble) {
+  /* Verhindert Standard-Fade, nur Transform */
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 body {

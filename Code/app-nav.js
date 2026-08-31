@@ -10,9 +10,7 @@ class AppNav extends HTMLElement {
   }
 
   getBasePath() {
-    return location.hostname.includes("github.io")
-      ? "/SylvaLearn"
-      : "";
+    return location.hostname.includes("github.io") ? "/SylvaLearn" : "";
   }
 
   render() {
@@ -21,203 +19,112 @@ class AppNav extends HTMLElement {
         :host {
           position: fixed;
           z-index: 9999;
-
           left: 0;
           right: 0;
           bottom: 0;
-
           display: flex;
           justify-content: center;
-
           pointer-events: none;
+          view-transition-name: app-nav;
         }
 
         .nav {
           position: relative;
-
-          width: min(420px, calc(100vw - 32px));
-
+          /* FIX: 100% statt 100vw – unabhängig von Scrollbar-Breite+Gutter */
+          width: min(420px, calc(100% - 32px));
           display: grid;
           grid-template-columns: repeat(5, 1fr);
-
           align-items: center;
-
           padding: 6px;
           margin-bottom: 14px;
-
           box-sizing: border-box;
-
           border-radius: 999px;
-
           background: rgba(255, 255, 255, 0.78);
-
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-
           border: 1px solid rgba(255, 255, 255, 0.65);
-
-          box-shadow:
-            0 10px 25px rgba(0, 0, 0, 0.08),
-            0 2px 6px rgba(0, 0, 0, 0.05);
-
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
           overflow: hidden;
-
           pointer-events: auto;
+          contain: layout;
         }
 
         button {
           position: relative;
           z-index: 2;
-
           width: 100%;
           min-width: 0;
-
           border: 0;
           outline: 0;
-
           background: transparent;
-
           padding: 10px 0;
-
           font-family: inherit;
           font-size: 12px;
-
           color: #7a8a82;
-
           border-radius: 999px;
-
           cursor: pointer;
-
-          transition:
-            color 0.2s ease,
-            transform 0.12s ease;
+          transition: color 0.2s ease, transform 0.12s ease;
         }
 
-        button:hover {
-          color: #1f6f4a;
-        }
-
-        button.active {
-          color: #1f6f4a;
-          font-weight: 600;
-        }
-
-        button span {
-          display: block;
-
-          font-size: 18px;
-          line-height: 20px;
-
-          margin-bottom: 2px;
-        }
-
-        button:active {
-          transform: scale(0.93);
-        }
+        button:hover { color: #1f6f4a; }
+        button.active { color: #1f6f4a; font-weight: 600; }
+        button span { display: block; font-size: 18px; line-height: 20px; margin-bottom: 2px; }
+        button:active { transform: scale(0.93); }
 
         /*
          * ==========================================
-         * BUBBLE
+         * BUBBLE – rein via CSS-Variable, kein JS-Messen
          * ==========================================
          */
-
         .bubble {
           position: absolute;
-
           top: 6px;
           left: 6px;
-
           height: calc(100% - 12px);
-
-          width: 0;
-
+          /* Breite = exakt 1/5 der verfügbaren Nav-Breite */
+          width: calc((100% - 12px) / 5);
           border-radius: 999px;
-
           background: #e8f3ed;
-
-          box-shadow:
-            inset 0 0 0 1px rgba(31, 111, 74, 0.04);
-
+          box-shadow: inset 0 0 0 1px rgba(31, 111, 74, 0.04);
           z-index: 1;
-
           pointer-events: none;
-
-          transform: translate3d(0, 0, 0);
-
-          /*
-           * WICHTIG:
-           * Anfangs KEINE Transition.
-           */
-
+          /* Index 0..4 – wird via JS gesetzt */
+          --active-index: 0;
+          transform: translateX(calc(var(--active-index) * 100%));
           transition: none;
+          will-change: transform;
+          /* Eigener View-Transition-Name für MPA-Slide zwischen Seiten */
+          view-transition-name: app-nav-bubble;
         }
 
-        /*
-         * Erst nachdem die Navigation vollständig
-         * positioniert wurde, wird diese Klasse gesetzt.
-         */
-
         .bubble.ready {
-          transition:
-            transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+          transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Während View Transition soll Bubble-Slide dieselbe Dauer haben */
+        @supports (view-transition-name: app-nav-bubble) {
+          .bubble { view-transition-name: app-nav-bubble; }
         }
 
         @media (max-width: 420px) {
-          .nav {
-            width: calc(100vw - 20px);
-            margin-bottom: 10px;
-          }
-
-          button {
-            padding: 9px 0;
-            font-size: 11px;
-          }
-
-          button span {
-            font-size: 17px;
-          }
+          .nav { width: calc(100% - 20px); margin-bottom: 10px; }
+          button { padding: 9px 0; font-size: 11px; }
+          button span { font-size: 17px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .bubble {
-            transition: none !important;
-          }
-
-          button {
-            transition: none !important;
-          }
+          .bubble { transition: none !important; }
+          button { transition: none !important; }
         }
       </style>
 
       <nav class="nav" aria-label="Hauptnavigation">
-
         <div class="bubble"></div>
-
-        <button data-page="/index">
-          <span>🏠</span>
-          Home
-        </button>
-
-        <button data-page="/Code/cards/cards">
-          <span>📚</span>
-          Karten
-        </button>
-
-        <button data-page="/Code/learn/learn">
-          <span>🎓</span>
-          Lernen
-        </button>
-
-        <button data-page="/Code/stats/stats">
-          <span>📊</span>
-          Statistik
-        </button>
-
-        <button data-page="/Code/profile/profile">
-          <span>👤</span>
-          Profil
-        </button>
-
+        <button data-page="/index"><span>🏠</span>Home</button>
+        <button data-page="/Code/cards/cards"><span>📚</span>Karten</button>
+        <button data-page="/Code/learn/learn"><span>🎓</span>Lernen</button>
+        <button data-page="/Code/stats/stats"><span>📊</span>Statistik</button>
+        <button data-page="/Code/profile/profile"><span>👤</span>Profil</button>
       </nav>
     `;
   }
@@ -225,229 +132,153 @@ class AppNav extends HTMLElement {
   init() {
     const nav = this.shadowRoot.querySelector(".nav");
     const bubble = this.shadowRoot.querySelector(".bubble");
-
-    const buttons = Array.from(
-      this.shadowRoot.querySelectorAll("button")
-    );
-
+    const buttons = Array.from(this.shadowRoot.querySelectorAll("button"));
     const base = this.getBasePath();
 
-    /*
-     * ==========================================
-     * AKTUELLEN PFAD
-     * ==========================================
-     */
-
     let currentPath = location.pathname;
-
-    if (base && currentPath.startsWith(base)) {
-      currentPath = currentPath.slice(base.length);
-    }
-
-    if (!currentPath) {
-      currentPath = "/";
-    }
-
-    /*
-     * ==========================================
-     * PFAD NORMALISIEREN
-     * ==========================================
-     */
+    if (base && currentPath.startsWith(base)) currentPath = currentPath.slice(base.length);
+    if (!currentPath) currentPath = "/";
 
     const normalize = (path) => {
-      if (path === "/index") {
-        return "/index.html";
-      }
-
-      return path.endsWith(".html")
-        ? path
-        : path + ".html";
+      if (path === "/index") return "/index.html";
+      return path.endsWith(".html") ? path : path + ".html";
     };
-
-    /*
-     * ==========================================
-     * AKTIVEN BUTTON FINDEN
-     * ==========================================
-     */
 
     let activeButton = null;
-
-    buttons.forEach((button) => {
+    let activeIndex = 0;
+    buttons.forEach((button, idx) => {
       const page = button.dataset.page;
       const target = normalize(page);
-
-      if (
-        currentPath === target ||
-        currentPath.endsWith(target)
-      ) {
+      if (currentPath === target || currentPath.endsWith(target)) {
         activeButton = button;
+        activeIndex = idx;
       }
-
-      if (
-        page === "/index" &&
-        (
-          currentPath === "/" ||
-          currentPath === "/index.html"
-        )
-      ) {
+      if (page === "/index" && (currentPath === "/" || currentPath === "/index.html")) {
         activeButton = button;
+        activeIndex = idx;
       }
     });
+    // Letzte Prüfung für Home auf GitHub Pages ("/SylvaLearn/" -> "/")
+    if (!activeButton) {
+      const fallback = buttons[0];
+      // Wenn kein Treffer aber Root, Home als aktiv
+      if (currentPath === "/" || currentPath === "/index.html") {
+        activeButton = fallback;
+        activeIndex = 0;
+      }
+    }
 
-    /*
-     * ==========================================
-     * BUBBLE POSITION
-     * ==========================================
-     */
-
-    const positionBubble = (button) => {
-      if (!button) return;
-
-      const index = buttons.indexOf(button);
-
-      if (index === -1) return;
-
-      const innerWidth = nav.clientWidth - 12;
-
-      const itemWidth =
-        innerWidth / buttons.length;
-
-      bubble.style.width =
-        `${itemWidth}px`;
-
-      bubble.style.transform =
-        `translate3d(${index * itemWidth}px, 0, 0)`;
+    const setIndex = (index, instant = false) => {
+      if (instant) bubble.classList.remove("ready");
+      bubble.style.setProperty("--active-index", String(index));
+      // Fallback für Browser ohne CSS-Variable-Transition-Support:
+      // width/transform wird bereits via CSS gehandelt, kein JS-Messen nötig
     };
 
-    /*
-     * ==========================================
-     * INITIALISIERUNG
-     * ==========================================
-     */
-
+    // ==========================================
+    // INITIALISIERUNG – garantiert ohne Sprung
+    // ==========================================
     if (activeButton) {
-
       activeButton.classList.add("active");
-
-      /*
-       * Ganz wichtig:
-       * Bubble zuerst unsichtbar positionieren.
-       */
-
+      // Sofort unsichtbar – verhindert Flash an Index 0
       bubble.style.visibility = "hidden";
+      setIndex(activeIndex, true);
 
-      positionBubble(activeButton);
-
-      /*
-       * Browser erst rendern lassen.
-       */
+      // Stabilisierung: erst nach stabilem Layout sichtbar machen
+      // 1) Double-rAF für erstes Paint
+      // 2) fonts.ready + window.load für Bilder/Fonts (besonders Profil/Stats/Home)
+      let initDone = false;
+      const finalize = () => {
+        if (initDone) return;
+        initDone = true;
+        // Nochmals Index setzen (falls sich Nav-Breite durch Bild/Font geändert)
+        setIndex(activeIndex, true);
+        bubble.style.visibility = "visible";
+        requestAnimationFrame(() => {
+          // Transition erst nach sichtbarem, korrektem Frame aktivieren
+          bubble.classList.add("ready");
+        });
+        // ResizeObserver erst NACH Finalize anhängen – verhindert Race während Init
+        if (typeof ResizeObserver !== "undefined") {
+          let roFrame = 0;
+          const ro = new ResizeObserver(() => {
+            // Bei Resize (z.B. Viewport, Font-Scale) ohne Animation nachjustieren
+            // CSS-Variable bleibt gleich, aber Breite ändert sich automatisch via calc()
+            // Dennoch kurz Transition aus, falls Browser transform neu berechnet
+            cancelAnimationFrame(roFrame);
+            roFrame = requestAnimationFrame(() => {
+              const wasReady = bubble.classList.contains("ready");
+              if (wasReady) bubble.classList.remove("ready");
+              // Index erneut setzen triggert Neuberechnung (no-op aber sicher)
+              bubble.style.setProperty("--active-index", String(activeIndex));
+              if (wasReady) requestAnimationFrame(() => bubble.classList.add("ready"));
+            });
+          });
+          ro.observe(nav);
+          this._ro = ro;
+        } else {
+          let resizeTimer;
+          window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+              bubble.classList.remove("ready");
+              bubble.style.setProperty("--active-index", String(activeIndex));
+              requestAnimationFrame(() => bubble.classList.add("ready"));
+            }, 50);
+          });
+        }
+      };
 
       requestAnimationFrame(() => {
-
         requestAnimationFrame(() => {
-
-          /*
-           * Jetzt ist die Bubble bereits
-           * an der richtigen Stelle.
-           */
-
-          bubble.style.visibility = "visible";
-
-          /*
-           * Erst jetzt Animation aktivieren.
-           */
-
-          bubble.classList.add("ready");
-
+          setIndex(activeIndex, true);
+          // Auf Fonts warten – Home/Stats/Profil haben viel Text/Emoji
+          const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+          const loadReady = document.readyState === "complete"
+            ? Promise.resolve()
+            : new Promise((res) => window.addEventListener("load", res, { once: true }));
+          // Race mit Timeout: max 300ms warten, dann trotzdem anzeigen (kein ewiges hidden)
+          let timeoutDone = false;
+          const timeout = new Promise((res) => setTimeout(() => { timeoutDone = true; res(); }, 300));
+          Promise.race([Promise.all([fontsReady, loadReady]), timeout]).then(() => {
+            // Falls Timeout vor Load, trotzdem finalisieren – RO fängt spätere Shifts ab
+            finalize();
+          });
+          // Falls Fonts/Load schneller als 2x rAF sowieso finalisieren
+          // Sicherstellen dass finalize spätestens nach 350ms passiert
+          setTimeout(finalize, 350);
         });
-
       });
     }
 
-    /*
-     * ==========================================
-     * NAVIGATION
-     * ==========================================
-     */
-
-    buttons.forEach((button) => {
-
+    // ==========================================
+    // NAVIGATION – Bubble gleitet, kein künstlicher Delay
+    // View Transition API übernimmt MPA-Slide für Bubble
+    // ==========================================
+    buttons.forEach((button, idx) => {
       button.addEventListener("click", (event) => {
-
         event.preventDefault();
+        if (button === activeButton) return;
 
-        if (button === activeButton) {
-          return;
-        }
-
-        /*
-         * Alten Active-State entfernen
-         */
-
-        buttons.forEach((b) => {
-          b.classList.remove("active");
-        });
-
-        /*
-         * Neuen Active-State setzen
-         */
-
+        buttons.forEach((b) => b.classList.remove("active"));
         button.classList.add("active");
 
-        /*
-         * Bubble animieren
-         */
+        // Für Same-Document-Slide: Index setzen mit Transition
+        bubble.classList.add("ready");
+        bubble.style.setProperty("--active-index", String(idx));
 
-        positionBubble(button);
+        const target = normalize(button.dataset.page);
+        const destination = base + target;
 
-        /*
-         * Zielseite
-         */
-
-        const target =
-          normalize(button.dataset.page);
-
-        const destination =
-          base + target;
-
-        /*
-         * Navigation direkt ausführen.
-         *
-         * Keine künstliche 180ms Verzögerung.
-         */
-
+        // View Transition für MPA: Browser morpht bubble von altem zu neuem Index
+        // Falls nicht unterstützt, fällt auf normalen href zurück (Animation bereits gestartet)
         window.location.href = destination;
       });
-
     });
+  }
 
-    /*
-     * ==========================================
-     * RESIZE
-     * ==========================================
-     */
-
-    let resizeTimer;
-
-    window.addEventListener("resize", () => {
-
-      clearTimeout(resizeTimer);
-
-      resizeTimer = setTimeout(() => {
-
-        if (activeButton) {
-          bubble.classList.remove("ready");
-
-          positionBubble(activeButton);
-
-          requestAnimationFrame(() => {
-            bubble.classList.add("ready");
-          });
-        }
-
-      }, 100);
-
-    });
+  disconnectedCallback() {
+    if (this._ro) this._ro.disconnect();
   }
 }
 
