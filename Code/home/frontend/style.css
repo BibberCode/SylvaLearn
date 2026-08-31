@@ -917,8 +917,11 @@ input:focus {
 .emoji-picker {
   position: absolute;
 
-  left: 50%;
-  transform: translateX(-50%);
+  /* Standard: links neben dem Button (für Editor) */
+  left: auto;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
 
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -938,6 +941,23 @@ input:focus {
 
   box-shadow:
     0 14px 40px rgba(0,0,0,0.12);
+
+  z-index: 5;
+  white-space: nowrap;
+}
+
+.emoji-picker-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Fallback: falls kein Wrapper vorhanden, zentriert (Abwärtskompatibilität) */
+h3 .emoji-picker:not(.emoji-picker-wrapper .emoji-picker) {
+  left: 50%;
+  right: auto;
+  top: calc(100% + 12px);
+  transform: translateX(-50%);
 }
 
 .emoji-picker button {

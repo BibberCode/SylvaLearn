@@ -238,8 +238,9 @@ class AppNav extends HTMLElement {
         const target = normalize(button.dataset.page);
         const destination = base + target;
 
-        // Loading Screen bleibt unberührt – neue Seite zeigt eigenen
-        // sylva-loading (minDuration 700ms) wie bisher
+        // Für sauberen Wechsel auch mit/ohne Loading Screen:
+        // Markiert Nav-Navigation für verkürzten Loading-Screen (Web)
+        try { sessionStorage.setItem("sylva-nav-from", Date.now().toString()); } catch {}
         window.location.href = destination;
       });
     });

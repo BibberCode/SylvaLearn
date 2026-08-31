@@ -1,11 +1,30 @@
 const loadingScreenEnabled =
   localStorage.getItem("loadingScreen") !== "false";
 
-if (loadingScreenEnabled) {
+const basePath = location.hostname.includes("github.io")
+  ? "/SylvaLearn"
+  : "";
 
-  const basePath = location.hostname.includes("github.io")
-    ? "/SylvaLearn"
-    : "";
+// Wenn Loading Screen aus -> Element sofort verstecken, Nav-Transition bleibt sauber
+if (!loadingScreenEnabled) {
+  // Sofort alle vorhandenen <sylva-loading> unsichtbar machen (falls HTML sie enthält)
+  const hideAll = () => document.querySelectorAll("sylva-loading").forEach(el => {
+    el.style.display = "none";
+    el.style.pointerEvents = "none";
+  });
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", hideAll, { once: true });
+  } else {
+    hideAll();
+  }
+  // Dummy definieren damit <sylva-loading> kein Unknown-Element bleibt
+  if (!customElements.get("sylva-loading")) {
+    class SylvaLoadingDisabled extends HTMLElement {
+      connectedCallback() { this.style.display = "none"; }
+    }
+    customElements.define("sylva-loading", SylvaLoadingDisabled);
+  }
+} else {
 
   class SylvaLoading extends HTMLElement {
 
@@ -15,6 +34,8 @@ if (loadingScreenEnabled) {
 
       this.startTime = performance.now();
       this.minDuration = 700;
+      // viaNav Marker aufräumen – Mindestdauer bleibt bei angeschaltetem Screen 700ms
+      try { sessionStorage.removeItem("sylva-nav-from"); } catch {}
     }
 
     connectedCallback() {

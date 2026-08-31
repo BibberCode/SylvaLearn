@@ -32,7 +32,7 @@
   </div>
 
   <!-- LERNSET -->
-  <div class="card profile-card">
+  <div class="card profile-card" style="overflow: visible;">
 
     <button
       onclick="deleteSet()"
@@ -40,16 +40,18 @@
       🗑️ Lernset löschen
     </button>
 
-    <h3>
+    <h3 style="display:flex; align-items:center; justify-content:center; gap:10px; overflow:visible;">
 
-      <button
-        id="emoji"
-        onclick="toggleEmojiPicker()"
-        style="background: transparent; border: none; font-size: 22px; cursor: pointer;">
-        📘
-      </button>
+      <span class="emoji-picker-wrapper">
+        <button
+          id="emoji"
+          onclick="toggleEmojiPicker()"
+          style="background: transparent; border: none; font-size: 22px; cursor: pointer;">
+          📘
+        </button>
 
-      <div id="emojiPicker" class="emoji-picker hidden"></div>
+        <div id="emojiPicker" class="emoji-picker hidden"></div>
+      </span>
 
       <span id="currentSetName"></span>
 
@@ -141,7 +143,7 @@
     class="button"
     style="margin-top: 30px;"
     onclick="saveAll(); switchPage()">
-    + Speichern
+    Speichern
   </button>
 
 </div>
