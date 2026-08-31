@@ -3,7 +3,12 @@ const loadingScreenEnabled =
 
 if (loadingScreenEnabled) {
 
+  const basePath = location.hostname.includes("github.io")
+    ? "/SylvaLearn"
+    : "";
+
   class SylvaLoading extends HTMLElement {
+
     constructor() {
       super();
       this.attachShadow({ mode: "open" });
@@ -27,8 +32,12 @@ if (loadingScreenEnabled) {
     }
 
     render() {
+
+      const cssPath =
+        `${basePath}/Code/loading-screen/loading-screen.css`;
+
       this.shadowRoot.innerHTML = `
-        <link rel="stylesheet" href="/Code/loading-screen/loading-screen.css">
+        <link rel="stylesheet" href="${cssPath}">
 
         <div class="loading-screen">
           <div class="loader"></div>
@@ -37,12 +46,12 @@ if (loadingScreenEnabled) {
     }
 
     finish() {
-      const elapsed = performance.now() - this.startTime;
 
-      const remaining = Math.max(
-        0,
-        this.minDuration - elapsed
-      );
+      const elapsed =
+        performance.now() - this.startTime;
+
+      const remaining =
+        Math.max(0, this.minDuration - elapsed);
 
       setTimeout(() => {
         this.hide();
@@ -50,6 +59,7 @@ if (loadingScreenEnabled) {
     }
 
     hide() {
+
       this.classList.add("hidden");
 
       setTimeout(() => {
@@ -58,5 +68,8 @@ if (loadingScreenEnabled) {
     }
   }
 
-  customElements.define("sylva-loading", SylvaLoading);
+  customElements.define(
+    "sylva-loading",
+    SylvaLoading
+  );
 }
