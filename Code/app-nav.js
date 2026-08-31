@@ -39,14 +39,15 @@ class AppNav extends HTMLElement {
           margin-bottom: 14px;
           box-sizing: border-box;
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.78);
+          background: var(--nav-bg, rgba(255, 255, 255, 0.78));
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.65);
+          border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.65));
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
           overflow: hidden;
           pointer-events: auto;
           contain: layout;
+          transition: background 0.25s ease, border-color 0.25s ease;
         }
 
         button {
@@ -60,14 +61,14 @@ class AppNav extends HTMLElement {
           padding: 10px 0;
           font-family: inherit;
           font-size: 12px;
-          color: #7a8a82;
+          color: var(--muted, #7a8a82);
           border-radius: 999px;
           cursor: pointer;
           transition: color 0.2s ease, transform 0.12s ease;
         }
 
-        button:hover { color: #1f6f4a; }
-        button.active { color: #1f6f4a; font-weight: 600; }
+        button:hover { color: var(--primary, #1f6f4a); }
+        button.active { color: var(--primary, #1f6f4a); font-weight: 600; }
         button span { display: block; font-size: 18px; line-height: 20px; margin-bottom: 2px; }
         button:active { transform: scale(0.93); }
 
@@ -84,8 +85,8 @@ class AppNav extends HTMLElement {
           /* Breite = exakt 1/5 der verfügbaren Nav-Breite */
           width: calc((100% - 12px) / 5);
           border-radius: 999px;
-          background: #e8f3ed;
-          box-shadow: inset 0 0 0 1px rgba(31, 111, 74, 0.04);
+          background: var(--bubble-bg, #e8f3ed);
+          box-shadow: var(--bubble-shadow, inset 0 0 0 1px rgba(31, 111, 74, 0.04));
           z-index: 1;
           pointer-events: none;
           /* Index 0..4 – wird via JS gesetzt */

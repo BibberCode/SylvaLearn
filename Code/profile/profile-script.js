@@ -183,17 +183,16 @@ window.addEventListener("DOMContentLoaded", () => {
   if (avarageEl) {
     if (!isNaN(avarage) && dailyCards > 0) {
       avarageEl.textContent = avarage + "%";
-    } 
-  } 
-  else {
-    avarageEl.textContent = "0%";
+    } else {
+      avarageEl.textContent = "0%";
+    }
   }
+
+  // Anzahl Lernsets (sicher nach DOM-Ready)
+  const sets = JSON.parse(localStorage.getItem("learnsets") || "[]");
+  const numberOfSets = sets.length;
+  const numberEl = document.getElementById("numberOfSets");
+  if (numberEl) numberEl.textContent = numberOfSets;
 
 });
 
-
-const sets = JSON.parse(localStorage.getItem("learnsets") || "[]");
-const numberOfSets = sets.length;
-
-const el = document.getElementById("numberOfSets");
-if (el) el.textContent = numberOfSets;

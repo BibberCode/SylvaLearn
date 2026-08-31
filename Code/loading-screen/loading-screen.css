@@ -13,6 +13,9 @@ LOADING SCREEN
   display: block;
 
   pointer-events: all;
+
+  opacity: 1;
+  transition: opacity 0.35s ease;
 }
 
 
@@ -20,24 +23,29 @@ LOADING SCREEN
   position: fixed;
   inset: 0;
 
-  background: #ffffff;
+  background: var(--loading-bg, #ffffff);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   z-index: 9000;
+
+  opacity: 1;
+  transition: opacity 0.35s ease;
+  will-change: opacity;
 }
 
 
 /*
 ========================================
-AUSBLENDEN
+AUSBLENDEN – sanft
 ========================================
 */
 
 :host(.hidden) {
   pointer-events: none;
+  opacity: 0;
 }
 
 :host(.hidden) .loading-screen {
@@ -57,7 +65,7 @@ DEINE ANIMATION
 
   position: relative;
 
-  --c: no-repeat linear-gradient(#2e8b5b 0 0);
+  --c: no-repeat linear-gradient(var(--loading-loader, #2e8b5b) 0 0);
 
   background:
     var(--c) center / 100% 10px,

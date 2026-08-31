@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Theme – vor CSS setzen um FOUC zu vermeiden -->
+  <script>(function(){try{var t=localStorage.getItem("sylva-theme");var e=t==="dark"||t==="light"?t:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",e);document.documentElement.style.colorScheme=e;}catch{}})();</script>
+
   <title>Statistik</title>
 
   <!-- LOADING SCREEN -->
@@ -366,7 +369,9 @@
 
 
 <!-- NAVIGATION -->
-<script src="../app-nav.js" defer></script>
+  <script src="../theme/theme.js" defer></script>
+
+  <script src="../app-nav.js" defer></script>
 <app-nav></app-nav>
 
 

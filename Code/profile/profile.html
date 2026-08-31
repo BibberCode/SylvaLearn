@@ -5,6 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Theme – vor CSS setzen um FOUC zu vermeiden -->
+  <script>(function(){try{var t=localStorage.getItem("sylva-theme");var e=t==="dark"||t==="light"?t:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",e);document.documentElement.style.colorScheme=e;}catch{}})();</script>
+
   <title>Profil</title>
 
   <!-- LOADING SCREEN -->
@@ -105,18 +108,29 @@
 
 
     <div class="loading-setting">
-      <p>Loading-Screen 
-        <!-- From Uiverse.io by SmookyDev --> 
-        <div class="tooltip">
-          <div class="icon">i</div>
-          <div class="tooltiptext">Deaktiviert den Loading-Screen für schnellere Seitenwechsel. An manchen Stellen kann der Seitenübergang dadurch kurzzeitig weniger sauber wirken.</div>
-        </div>
-      </p>
-
-      <input type="checkbox" id="checkboxInput" onchange="toggleLoading()">
-      <label for="checkboxInput" class="toggleSwitch"></label>
+      <span class="setting-label">Loading-Screen
+        <span class="tooltip">
+          <span class="icon">i</span>
+          <span class="tooltiptext">Deaktiviert den Loading-Screen für schnellere Seitenwechsel. An manchen Stellen kann der Seitenübergang dadurch kurzzeitig weniger sauber wirken.</span>
+        </span>
+      </span>
+      <span class="setting-control">
+        <input type="checkbox" id="checkboxInput" class="toggleCheck" onchange="toggleLoading()">
+        <label for="checkboxInput" class="toggleSwitch"></label>
+      </span>
     </div>
 
+  </div>
+
+  <!-- DARSTELLUNG – Dark Mode -->
+  <div class="card">
+    <h3>🎨 Darstellung</h3>
+    <p class="small-text">Helles, dunkles oder System-Design. Nav, Cards und Loading Screen passen sich an.</p>
+    <div class="mode-switch" id="themeSwitch" style="margin-top:14px; width:100%; justify-content:center;">
+      <button class="mode" data-theme="light">☀️ Hell</button>
+      <button class="mode" data-theme="dark">🌙 Dunkel</button>
+      <button class="mode" data-theme="system">⚙️ System</button>
+    </div>
   </div>
 
 
@@ -214,7 +228,9 @@
 
 
 <!-- NAVIGATION -->
-<script src="../app-nav.js" defer></script>
+  <script src="../theme/theme.js" defer></script>
+
+  <script src="../app-nav.js" defer></script>
 <app-nav></app-nav>
 
 
@@ -223,6 +239,36 @@
 <script src="../home/frontend/uiTime.js" defer></script>
 <script src="../home/frontend/streak.js" defer></script>
 <script src="./loading-toggle.js" defer></script>
+<script>
+  // Theme-Toggle Logik für Profil
+  document.addEventListener("DOMContentLoaded", () => {
+    const quick = document.getElementById("themeToggle");
+    const status = document.getElementById("themeStatus");
+    const updateQuick = () => { if (quick && window.SylvaTheme) quick.checked = window.SylvaTheme.isDark(); };
+    const updateActive = () => {
+      const cur = window.SylvaTheme ? window.SylvaTheme.get() : "system";
+      const eff = window.SylvaTheme ? window.SylvaTheme.getEffective() : "light";
+      document.querySelectorAll("#themeSwitch [data-theme]").forEach(b => {
+        b.classList.toggle("active", b.dataset.theme === cur);
+      });
+      updateQuick();
+      if (status) {
+        if (cur === "system") status.textContent = `System (aktuell: ${eff === "dark" ? "Dunkel" : "Hell"})`;
+        else status.textContent = cur === "dark" ? "Dunkel aktiviert" : "Hell aktiviert";
+      }
+    };
+    window.toggleThemeQuick = () => { if (window.SylvaTheme) { window.SylvaTheme.toggle(); updateActive(); } };
+    document.querySelectorAll("#themeSwitch [data-theme]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (window.SylvaTheme) window.SylvaTheme.set(btn.dataset.theme);
+        updateActive();
+      });
+    });
+    updateActive();
+    document.addEventListener("themechange", updateActive);
+    setTimeout(updateActive, 300);
+  });
+</script>
 
 </body>
 </html>
