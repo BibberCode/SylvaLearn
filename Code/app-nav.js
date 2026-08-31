@@ -171,84 +171,49 @@ class AppNav extends HTMLElement {
     const setIndex = (index, instant = false) => {
       if (instant) bubble.classList.remove("ready");
       bubble.style.setProperty("--active-index", String(index));
-      // Fallback für Browser ohne CSS-Variable-Transition-Support:
-      // width/transform wird bereits via CSS gehandelt, kein JS-Messen nötig
     };
 
     // ==========================================
-    // INITIALISIERUNG – garantiert ohne Sprung
+    // INITIALISIERUNG – sofort korrekt, kein Hide/Flash
+    // Bubble via CSS-Variable ist bereits per calc() korrekt,
+    // daher kein visibility:hidden nötig. Nur Transition kurz aus.
     // ==========================================
     if (activeButton) {
       activeButton.classList.add("active");
-      // Sofort unsichtbar – verhindert Flash an Index 0
-      bubble.style.visibility = "hidden";
+      // Direkt korrekten Index setzen – kein Sprung, kein Entladen
       setIndex(activeIndex, true);
-
-      // Stabilisierung: erst nach stabilem Layout sichtbar machen
-      // 1) Double-rAF für erstes Paint
-      // 2) fonts.ready + window.load für Bilder/Fonts (besonders Profil/Stats/Home)
-      let initDone = false;
-      const finalize = () => {
-        if (initDone) return;
-        initDone = true;
-        // Nochmals Index setzen (falls sich Nav-Breite durch Bild/Font geändert)
-        setIndex(activeIndex, true);
-        bubble.style.visibility = "visible";
-        requestAnimationFrame(() => {
-          // Transition erst nach sichtbarem, korrektem Frame aktivieren
-          bubble.classList.add("ready");
-        });
-        // ResizeObserver erst NACH Finalize anhängen – verhindert Race während Init
-        if (typeof ResizeObserver !== "undefined") {
-          let roFrame = 0;
-          const ro = new ResizeObserver(() => {
-            // Bei Resize (z.B. Viewport, Font-Scale) ohne Animation nachjustieren
-            // CSS-Variable bleibt gleich, aber Breite ändert sich automatisch via calc()
-            // Dennoch kurz Transition aus, falls Browser transform neu berechnet
-            cancelAnimationFrame(roFrame);
-            roFrame = requestAnimationFrame(() => {
-              const wasReady = bubble.classList.contains("ready");
-              if (wasReady) bubble.classList.remove("ready");
-              // Index erneut setzen triggert Neuberechnung (no-op aber sicher)
-              bubble.style.setProperty("--active-index", String(activeIndex));
-              if (wasReady) requestAnimationFrame(() => bubble.classList.add("ready"));
-            });
-          });
-          ro.observe(nav);
-          this._ro = ro;
-        } else {
-          let resizeTimer;
-          window.addEventListener("resize", () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-              bubble.classList.remove("ready");
-              bubble.style.setProperty("--active-index", String(activeIndex));
-              requestAnimationFrame(() => bubble.classList.add("ready"));
-            }, 50);
-          });
-        }
-      };
-
+      // Nach erstem Paint Transition aktivieren für smooth Gleiten bei Klick
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          setIndex(activeIndex, true);
-          // Auf Fonts warten – Home/Stats/Profil haben viel Text/Emoji
-          const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-          const loadReady = document.readyState === "complete"
-            ? Promise.resolve()
-            : new Promise((res) => window.addEventListener("load", res, { once: true }));
-          // Race mit Timeout: max 300ms warten, dann trotzdem anzeigen (kein ewiges hidden)
-          let timeoutDone = false;
-          const timeout = new Promise((res) => setTimeout(() => { timeoutDone = true; res(); }, 300));
-          Promise.race([Promise.all([fontsReady, loadReady]), timeout]).then(() => {
-            // Falls Timeout vor Load, trotzdem finalisieren – RO fängt spätere Shifts ab
-            finalize();
-          });
-          // Falls Fonts/Load schneller als 2x rAF sowieso finalisieren
-          // Sicherstellen dass finalize spätestens nach 350ms passiert
-          setTimeout(finalize, 350);
+          bubble.classList.add("ready");
         });
       });
+
+      // ResizeObserver nur für Viewport-Änderungen (z.B. Rotation)
+      // Kein hide/show, da calc() bereits stabil
+      if (typeof ResizeObserver !== "undefined") {
+        let roFrame = 0;
+        const ro = new ResizeObserver(() => {
+          cancelAnimationFrame(roFrame);
+          roFrame = requestAnimationFrame(() => {
+            // Kurz Transition aus für instant Neuberechnung bei Größenänderung
+            const wasReady = bubble.classList.contains("ready");
+            if (wasReady) bubble.classList.remove("ready");
+            bubble.style.setProperty("--active-index", String(activeIndex));
+            if (wasReady) requestAnimationFrame(() => bubble.classList.add("ready"));
+          });
+        });
+        ro.observe(nav);
+        this._ro = ro;
+      }
+
+      // Fonts nachladen (Emoji) – nur falls nötig leicht nachjustieren
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          // Index bleibt gleich, Browser rechnet calc() neu – kein Visible-Jump
+          bubble.style.setProperty("--active-index", String(activeIndex));
+        });
+      }
     }
 
     // ==========================================
@@ -263,15 +228,17 @@ class AppNav extends HTMLElement {
         buttons.forEach((b) => b.classList.remove("active"));
         button.classList.add("active");
 
-        // Für Same-Document-Slide: Index setzen mit Transition
+        // Bubble gleitet smooth (falls View Transitions nicht unterstützen,
+        // sieht man kurzen Glide vor dem Unload; mit View Transitions
+        // übernimmt die Cross-Document-Animation den Slide)
         bubble.classList.add("ready");
         bubble.style.setProperty("--active-index", String(idx));
 
         const target = normalize(button.dataset.page);
         const destination = base + target;
 
-        // View Transition für MPA: Browser morpht bubble von altem zu neuem Index
-        // Falls nicht unterstützt, fällt auf normalen href zurück (Animation bereits gestartet)
+        // Loading Screen bleibt unberührt – neue Seite zeigt eigenen
+        // sylva-loading (minDuration 700ms) wie bisher
         window.location.href = destination;
       });
     });

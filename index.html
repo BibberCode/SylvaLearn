@@ -1,79 +1,166 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zuhause - Lern doch noch etwas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="./Code/home/frontend/style.css">
+  <title>Zuhause - Lern doch noch etwas</title>
 
+  <!-- Loading Screen CSS – SOFORT laden -->
+  <link rel="stylesheet" href="./Code/loading-screen/loading-screen.css">
+
+  <!-- Haupt-CSS -->
+  <link rel="stylesheet" href="./Code/home/frontend/style.css">
+
+  <meta name="version" content="v1.0.5 beta">
 </head>
 
 <body>
+
+<!-- ========================================
+     LOADING SCREEN
+========================================= -->
+
+<sylva-loading></sylva-loading>
+
+<script src="./Code/loading-screen/loading-screen.js" defer></script>
+
+
+<!-- ========================================
+     HAUPTINHALT
+========================================= -->
 
 <div class="container">
 
   <!-- HEADER -->
   <div class="header">
-    <div class="logo">📖SylvaLearn</div>
-    <div class="streak">🔥 <span id="streak">0</span> Streak</div>
+
+    <div class="logo">
+      📖SylvaLearn
+    </div>
+
+    <div class="streak">
+      🔥 <span id="streak">0</span> Streak
+    </div>
+
   </div>
+
 
   <!-- GREETING -->
   <div class="card">
-    <h2>Hallo <span id="name">Lernender</span>! 👋</h2>
-    <p>Bereit, heute etwas zu lernen?</p>
+
+    <h2>
+      Hallo <span id="name">Lernender</span>! 👋
+    </h2>
+
+    <p>
+      Bereit, heute etwas zu lernen?
+    </p>
 
     <div class="progress-bar">
       <div class="progress" id="bar"></div>
     </div>
 
-    <p><strong><span id="timer"></span> / <span id="maxMinutes"></span></strong></p>
+    <p>
+      <strong>
+        <span id="timer"></span>
+        /
+        <span id="maxMinutes"></span>
+      </strong>
+    </p>
+
   </div>
+
 
   <!-- WEITERLERNEN -->
-  <h3 style="margin-top: 25px;">Lernsets üben</h3>
+  <h3 style="margin-top: 25px;">
+    Lernsets üben
+  </h3>
 
   <div class="card">
-    <div class="grid" id="learnsetListLearn"></div>
+
+    <div
+      class="grid"
+      id="learnsetListLearn">
+    </div>
+
   </div>
+
 
   <!-- LERNSETS BEARBEITEN -->
-  <h3 style="margin-top: 25px;">Lernsets bearbeiten</h3>
+  <h3 style="margin-top: 25px;">
+    Lernsets bearbeiten
+  </h3>
 
   <div class="card">
-    <div class="grid" id="learnsetListEdit"></div>
+
+    <div
+      class="grid"
+      id="learnsetListEdit">
+    </div>
+
   </div>
+
 
   <!-- HOW IT WORKS -->
-  <h3 style="margin-top: 25px;">So funktioniert es</h3>
+  <h3 style="margin-top: 25px;">
+    So funktioniert es
+  </h3>
 
   <div class="card">
+
     <div class="grid">
-      <div class="small-card">1️⃣<br>Karte ansehen</div>
-      <div class="small-card">2️⃣<br>Antwort geben</div>
-      <div class="small-card">3️⃣<br>Selbsteinschätzung</div>
+
+      <div class="small-card">
+        1️⃣<br>
+        Karte ansehen
+      </div>
+
+      <div class="small-card">
+        2️⃣<br>
+        Antwort geben
+      </div>
+
+      <div class="small-card">
+        3️⃣<br>
+        Selbsteinschätzung
+      </div>
+
     </div>
 
-    <div class="button" style="margin-top: 10px;" onclick="location.href='./Code/cards/cards.html'">
+    <div
+      class="button"
+      style="margin-top: 10px;"
+      onclick="location.href='./Code/cards/cards.html'">
+
       + Neues Lernset erstellen
-    </div>
-  </div>
 
+    </div>
+
+  </div>
 
 </div>
 
-<!-- NAV -->
+
+<!-- ========================================
+     NAVIGATION
+========================================= -->
+
 <script src="./Code/app-nav.js" defer></script>
+
 <app-nav></app-nav>
 
-<!-- SCRIPTS -->
-<script src="./Code/home/frontend/uiTime.js" defer></script>
-<script src="./Code/home/frontend/streak.js" defer></script>
-<script src="./Code/home/frontend/setsRenderHome.js" defer></script>
 
-<!-- Meta -->
-<meta name="version" content="v1.0.5 beta">
+<!-- ========================================
+     SEITENSCRIPTS
+========================================= -->
+
+<script src="./Code/home/frontend/uiTime.js" defer></script>
+
+<script src="./Code/home/frontend/streak.js" defer></script>
+
+<script src="./Code/home/frontend/setsRenderHome.js" defer></script>
 
 </body>
 </html>

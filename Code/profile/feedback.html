@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Feedback</title>
 
+  <!-- LOADING SCREEN -->
+  <link rel="stylesheet" href="../loading-screen/loading-screen.css">
+
+  <!-- HAUPT-CSS -->
   <link rel="stylesheet" href="../home/frontend/style.css">
+
 </head>
 
 <body>
+
+<!-- LOADING SCREEN -->
+<sylva-loading></sylva-loading>
+<script src="../loading-screen/loading-screen.js" defer></script>
+
 
 <div class="container">
 
@@ -17,74 +29,122 @@
     <div class="logo">Support</div>
   </div>
 
+
   <!-- INFO -->
   <div class="card">
-    <h2>Probleme melden</h2>
+
+    <h2>
+      Probleme melden
+    </h2>
+
     <p class="subtext">
       Hier kannst du schnell Bugs melden oder Ideen für neue Funktionen einsenden.
     </p>
+
   </div>
 
+
   <!-- HINWEIS -->
-  <p class="small-text" style="margin: 8px 4px;">
+  <p
+    class="small-text"
+    style="margin: 8px 4px;">
+
     ⚠️ Bitte nur ernst gemeinte Meldungen (kein Spam).
+
   </p>
+
 
   <!-- BUG -->
   <div class="card">
-    <h3>🐛 Bug melden</h3>
+
+    <h3>
+      🐛 Bug melden
+    </h3>
+
     <p class="small-text">
       Wenn etwas nicht funktioniert oder Fehler auftreten.
     </p>
 
-    <div class="button"
-         onclick="window.open('https://forms.gle/V1j6xAgp8K5nWXrh7', '_blank')">
+    <div
+      class="button"
+      onclick="window.open('https://forms.gle/V1j6xAgp8K5nWXrh7', '_blank')">
+
       Bug melden
+
     </div>
+
   </div>
+
 
   <!-- IDEA -->
   <div class="card">
-    <h3>💡 Idee / Verbesserung</h3>
+
+    <h3>
+      💡 Idee / Verbesserung
+    </h3>
+
     <p class="small-text">
       Neue Funktionen oder Verbesserungen für die Learn App.
     </p>
 
-    <div class="button"
-         onclick="window.open('https://forms.gle/V1j6xAgp8K5nWXrh7', '_blank')">
+    <div
+      class="button"
+      onclick="window.open('https://forms.gle/V1j6xAgp8K5nWXrh7', '_blank')">
+
       Idee vorschlagen
+
     </div>
+
   </div>
+
 
   <!-- OPEN SOURCE -->
   <div class="card">
-    <h3>📦 Open Source</h3>
+
+    <h3>
+      📦 Open Source
+    </h3>
+
     <p class="small-text">
-      Der Code der Learn App ist öffentlich auf GitHub verfügbar.  
+      Der Code der Learn App ist öffentlich auf GitHub verfügbar.
       Du kannst selbst Verbesserungen beitragen oder Fehler fixen.
     </p>
 
-    <div class="button"
-         onclick="window.open('https://github.com/BibberCode/Learn-App', '_blank')">
+    <div
+      class="button"
+      onclick="window.open('https://github.com/BibberCode/Learn-App', '_blank')">
+
       GitHub öffnen
+
     </div>
+
   </div>
+
 
   <!-- DISCLAIMER -->
   <div class="card">
-    <h3>ℹ️ Hinweis</h3>
+
+    <h3>
+      ℹ️ Hinweis
+    </h3>
+
     <p class="small-text">
-      Dieses Projekt wurde unabhängig entwickelt. Daher können vereinzelt Fehler auftreten.  
+      Dieses Projekt wurde unabhängig entwickelt.
+      Daher können vereinzelt Fehler auftreten.
       Jede Rückmeldung hilft, die App zu verbessern.
     </p>
+
   </div>
 
-  <p style="font-size: 13px;">Version: v1.0.4 beta</p>
 
-  
+  <p style="font-size: 13px;">
+    Version: v1.0.4 beta
+  </p>
 
 </div>
 
+
+<!-- NAVIGATION -->
 <script src="../app-nav.js" defer></script>
 <app-nav></app-nav>
 

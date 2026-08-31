@@ -1,53 +1,93 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Karten</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="../home/frontend/style.css">
+  <title>Karten</title>
 
+  <!-- Loading Screen CSS -->
+  <link rel="stylesheet" href="../loading-screen/loading-screen.css">
+
+  <!-- Normales CSS -->
+  <link rel="stylesheet" href="../home/frontend/style.css">
+
+  <!-- Loading Screen JS -->
+  <script src="../loading-screen/loading-screen.js" defer></script>
 </head>
 
 <body>
 
-<div class="container">
+  <!-- LOADING SCREEN – MUSS DIREKT NACH BODY KOMMEN -->
+  <sylva-loading></sylva-loading>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo">LernSets</div>
-    <div class="streak">🔥 <span id="streak">0</span> Streak</div>
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo">LernSets</div>
+
+      <div class="streak">
+        🔥 <span id="streak">0</span> Streak
+      </div>
+    </div>
+
+
+    <!-- NEUES LERNSET -->
+    <div class="card">
+
+      <h3>Neues Lernset erstellen</h3>
+
+      <input
+        id="title"
+        type="text"
+        placeholder="Titel eingeben"
+      >
+
+      <input
+        id="description"
+        type="text"
+        style="margin-top: 10px"
+        placeholder="Beschreibung (optional)"
+      >
+
+      <button
+        style="margin-top: 12px;"
+        class="button"
+        onclick="addLearnset()"
+      >
+        Erstellen
+      </button>
+
+    </div>
+
+
+    <!-- LERNSETS ÜBERSICHT -->
+    <div class="card">
+
+      <h3>Deine Lernsets bearbeiten</h3>
+
+      <div
+        class="grid"
+        id="learnsetList"
+      ></div>
+
+    </div>
+
   </div>
 
-  <!-- NEUES LERNSET -->
-  <div class="card">
-    <h3>Neues Lernset erstellen</h3>
 
-    <input id="title" type="text" placeholder="Titel eingeben">
-    <input id="description" type="text" style="margin-top: 10px" placeholder="Beschreibung (optional)">
+  <!-- NAVIGATION -->
+  <script src="../app-nav.js" defer></script>
 
-    <button style="margin-top: 12px;" class="button" onclick="addLearnset()">
-      Erstellen
-    </button>
-  </div>
+  <app-nav></app-nav>
 
-  <!-- LERNSETS ÜBERSICHT -->
-  <div class="card">
-    <h3>Deine Lernsets bearbeiten</h3>
-    <div class="grid" id="learnsetList"></div>
-  </div>
 
-  
+  <!-- SCRIPTS -->
+  <script src="../home/frontend/streak.js" defer></script>
 
-</div>
-
-<!-- NAV -->
-<script src="../app-nav.js" defer></script>
-<app-nav></app-nav>
-
-<!-- SCRIPTS -->
-<script src="../home/frontend/streak.js" defer></script>
-<script src="./learnsets.js" defer></script>
+  <script src="./learnsets.js" defer></script>
 
 </body>
 </html>

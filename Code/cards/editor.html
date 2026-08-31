@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Lernset Editor</title>
+
+  <!-- LOADING SCREEN -->
+  <link rel="stylesheet" href="../loading-screen/loading-screen.css">
 
   <!-- CSS FIX -->
   <link rel="stylesheet" href="../home/frontend/style.css">
 </head>
 
 <body>
+
+<!-- LOADING SCREEN -->
+<sylva-loading></sylva-loading>
+<script src="../loading-screen/loading-screen.js" defer></script>
+
 
 <div id="container" class="container">
 
@@ -20,72 +30,126 @@
 
   <!-- LERNSET -->
   <div class="card profile-card">
-    <button onclick="deleteSet()" style="background: transparent; border: none; cursor: pointer;">🗑️ Lernset löschen</button>
 
-  <h3>
-    <button id="emoji" onclick="toggleEmojiPicker()"
-      style="background: transparent; border: none; font-size: 22px; cursor: pointer;">
-      📘
+    <button
+      onclick="deleteSet()"
+      style="background: transparent; border: none; cursor: pointer;">
+      🗑️ Lernset löschen
     </button>
 
-    <div id="emojiPicker" class="emoji-picker hidden"></div>
+    <h3>
 
-    <span id="currentSetName"></span>
-  </h3>
-  
-    
+      <button
+        id="emoji"
+        onclick="toggleEmojiPicker()"
+        style="background: transparent; border: none; font-size: 22px; cursor: pointer;">
+        📘
+      </button>
+
+      <div id="emojiPicker" class="emoji-picker hidden"></div>
+
+      <span id="currentSetName"></span>
+
+    </h3>
+
     <div class="small-text" id="description"></div>
 
-    <div style="margin-top: 30px; margin-bottom: 5px;">Name des Lernsets:</div>
-    <input id="setName" placeholder="Name des Lernsets">
-
-    <div style="margin-top: 30px; margin-bottom: 5px;">Beschreibung des Lernsets:</div>
-    <input id="setDescription" placeholder="Beschreibung des Lernsets">
-
-
-    <div style="margin-top: 30px; margin-bottom: 10px;">Modus:</div>
-    <div id="modeSwitchCenter" class="mode-switch">
-      <button class="mode active" data-mode="self-compare">Selbst vergleichen</button>
-      <button class="mode" data-mode="input-answer">Antwort eingeben</button>
+    <div style="margin-top: 30px; margin-bottom: 5px;">
+      Name des Lernsets:
     </div>
+
+    <input
+      id="setName"
+      placeholder="Name des Lernsets"
+    >
+
+    <div style="margin-top: 30px; margin-bottom: 5px;">
+      Beschreibung des Lernsets:
+    </div>
+
+    <input
+      id="setDescription"
+      placeholder="Beschreibung des Lernsets"
+    >
+
+    <div style="margin-top: 30px; margin-bottom: 10px;">
+      Modus:
+    </div>
+
+    <div id="modeSwitchCenter" class="mode-switch">
+
+      <button
+        class="mode active"
+        data-mode="self-compare">
+        Selbst vergleichen
+      </button>
+
+      <button
+        class="mode"
+        data-mode="input-answer">
+        Antwort eingeben
+      </button>
+
+    </div>
+
   </div>
+
 
   <!-- KARTEN -->
   <div id="cardContainer">
+
     <div class="card">
-      <button onclick="deleteCard(this)" style="background: transparent; border: none;">
+
+      <button
+        onclick="deleteCard(this)"
+        style="background: transparent; border: none;">
         🗑️ Karte löschen
       </button>
 
       <h2>Karte</h2>
 
       <h4>Frage</h4>
-      <input class="frage" placeholder="Frage eingeben">
+
+      <input
+        class="frage"
+        placeholder="Frage eingeben">
 
       <h4>Antwort</h4>
-      <input class="antwort" placeholder="Antwort eingeben">
+
+      <input
+        class="antwort"
+        placeholder="Antwort eingeben">
+
     </div>
+
   </div>
 
-  <button class="button" onclick="addCard()" style="margin-top: 20px;">
+
+  <button
+    class="button"
+    onclick="addCard()"
+    style="margin-top: 20px;">
     + Karte hinzufügen
   </button>
 
+
   <!-- SAVE -->
-  <button class="button" style="margin-top: 30px;"
-          onclick="saveAll(); switchPage()">
+  <button
+    class="button"
+    style="margin-top: 30px;"
+    onclick="saveAll(); switchPage()">
     + Speichern
   </button>
 
-  
-
 </div>
+
 
 <!-- NAVIGATION -->
 <script src="../app-nav.js" defer></script>
 <app-nav></app-nav>
 
-<!-- EDITOR LOGIC (KRITISCH) -->
+
+<!-- EDITOR LOGIC -->
 <script src="./editor.js" defer></script>
 
 </body>

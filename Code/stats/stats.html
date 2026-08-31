@@ -1,171 +1,371 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Statistik</title>
 
-<link rel="stylesheet" href="../home/frontend/style.css">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Statistik</title>
+
+  <!-- LOADING SCREEN -->
+  <link rel="stylesheet" href="../loading-screen/loading-screen.css">
+
+  <!-- HAUPT-CSS -->
+  <link rel="stylesheet" href="../home/frontend/style.css">
 
 </head>
 
 <body>
 
+<!-- LOADING SCREEN -->
+<sylva-loading></sylva-loading>
+<script src="../loading-screen/loading-screen.js" defer></script>
+
+
 <div class="container">
 
   <!-- HEADER -->
   <div class="header">
-    <div class="logo">Stats</div>
-    <div class="logo" style="color: red;">Baustelle</div>
-    <div class="streak">🔥 <span id="streak">0</span> Streak</div>
+
+    <div class="logo">
+      Stats
+    </div>
+
+    <div
+      class="logo"
+      style="color: red;">
+
+      Baustelle
+
+    </div>
+
+    <div class="streak">
+      🔥 <span id="streak">0</span> Streak
+    </div>
+
   </div>
+
 
   <!-- OVERVIEW -->
   <div class="card">
-    <h2>Deine Statistik 📊</h2>
-    <p>So lief dein Lernen in letzter Zeit.</p>
 
-    <div class="grid" style="margin-top: 16px;">
+    <h2>
+      Deine Statistik 📊
+    </h2>
+
+    <p>
+      So lief dein Lernen in letzter Zeit.
+    </p>
+
+
+    <div
+      class="grid"
+      style="margin-top: 16px;">
 
       <div class="small-card">
-        <h4>124</h4>
-        <p>Gelernte Karten</p>
+
+        <h4>
+          124
+        </h4>
+
+        <p>
+          Gelernte Karten
+        </p>
+
       </div>
 
-      <div class="small-card">
-        <h4>87%</h4>
-        <p>Erfolgsquote</p>
-      </div>
 
       <div class="small-card">
-        <h4>23h</h4>
-        <p>Lernzeit</p>
+
+        <h4>
+          87%
+        </h4>
+
+        <p>
+          Erfolgsquote
+        </p>
+
+      </div>
+
+
+      <div class="small-card">
+
+        <h4>
+          23h
+        </h4>
+
+        <p>
+          Lernzeit
+        </p>
+
       </div>
 
     </div>
+
   </div>
 
+
   <!-- WOCHENAKTIVITÄT -->
-  <h3 style="margin-top: 25px;">Wochenaktivität</h3>
+  <h3 style="margin-top: 25px;">
+    Wochenaktivität
+  </h3>
+
 
   <div class="card">
 
-    <div style="
-    display:flex;
-    align-items:flex-end;
-    gap:10px;
-    height:180px;
-    margin-top:10px;
-    ">
+    <div
+      style="
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        height: 180px;
+        margin-top: 10px;
+      ">
 
-    <div class="bar"><div style="height:40%"></div><span>Mo</span></div>
-    <div class="bar"><div style="height:70%"></div><span>Di</span></div>
-    <div class="bar"><div style="height:55%"></div><span>Mi</span></div>
-    <div class="bar"><div style="height:90%"></div><span>Do</span></div>
-    <div class="bar"><div style="height:65%"></div><span>Fr</span></div>
-    <div class="bar"><div style="height:30%"></div><span>Sa</span></div>
-    <div class="bar"><div style="height:80%"></div><span>So</span></div>
+      <div class="bar">
+        <div style="height: 40%"></div>
+        <span>Mo</span>
+      </div>
+
+      <div class="bar">
+        <div style="height: 70%"></div>
+        <span>Di</span>
+      </div>
+
+      <div class="bar">
+        <div style="height: 55%"></div>
+        <span>Mi</span>
+      </div>
+
+      <div class="bar">
+        <div style="height: 90%"></div>
+        <span>Do</span>
+      </div>
+
+      <div class="bar">
+        <div style="height: 65%"></div>
+        <span>Fr</span>
+      </div>
+
+      <div class="bar">
+        <div style="height: 30%"></div>
+        <span>Sa</span>
+      </div>
+
+      <div class="bar">
+        <div style="height: 80%"></div>
+        <span>So</span>
+      </div>
 
     </div>
+
   </div>
 
+
   <!-- FÄCHER -->
-  <h3 style="margin-top: 25px;">Fächer</h3>
+  <h3 style="margin-top: 25px;">
+    Fächer
+  </h3>
+
 
   <div class="card">
 
     <div class="small-card">
-      <h4>Biologie</h4>
-      <p>42 Karten gelernt</p>
+
+      <h4>
+        Biologie
+      </h4>
+
+      <p>
+        42 Karten gelernt
+      </p>
 
       <div class="progress-bar">
-        <div class="progress" style="width:92%;"></div>
+
+        <div
+          class="progress"
+          style="width: 92%;">
+
+        </div>
+
       </div>
 
-      <p class="small-text">92% richtig beantwortet</p>
+      <p class="small-text">
+        92% richtig beantwortet
+      </p>
+
     </div>
 
-    <div class="small-card" style="margin-top:12px;">
-      <h4>Mathematik</h4>
-      <p>31 Karten gelernt</p>
+
+    <div
+      class="small-card"
+      style="margin-top: 12px;">
+
+      <h4>
+        Mathematik
+      </h4>
+
+      <p>
+        31 Karten gelernt
+      </p>
 
       <div class="progress-bar">
-        <div class="progress" style="width:74%;"></div>
+
+        <div
+          class="progress"
+          style="width: 74%;">
+
+        </div>
+
       </div>
 
-      <p class="small-text">74% richtig beantwortet</p>
+      <p class="small-text">
+        74% richtig beantwortet
+      </p>
+
     </div>
 
-    <div class="small-card" style="margin-top:12px;">
-      <h4>Geschichte</h4>
-      <p>19 Karten gelernt</p>
+
+    <div
+      class="small-card"
+      style="margin-top: 12px;">
+
+      <h4>
+        Geschichte
+      </h4>
+
+      <p>
+        19 Karten gelernt
+      </p>
 
       <div class="progress-bar">
-        <div class="progress" style="width:85%;"></div>
+
+        <div
+          class="progress"
+          style="width: 85%;">
+
+        </div>
+
       </div>
 
-      <p class="small-text">85% richtig beantwortet</p>
+      <p class="small-text">
+        85% richtig beantwortet
+      </p>
+
     </div>
 
   </div>
+
 
   <!-- ACHIEVEMENTS -->
-  <h3 style="margin-top: 25px;">Achievements</h3>
+  <h3 style="margin-top: 25px;">
+    Achievements
+  </h3>
+
 
   <div class="card">
 
     <div class="grid">
 
       <div class="small-card">
-        <h4>🔥 7 Tage</h4>
-        <p>Streak erreicht</p>
+
+        <h4>
+          🔥 7 Tage
+        </h4>
+
+        <p>
+          Streak erreicht
+        </p>
+
       </div>
 
-      <div class="small-card">
-        <h4>🧠 100 Karten</h4>
-        <p>Gelernt</p>
-      </div>
 
       <div class="small-card">
-        <h4>⚡ Schnell</h4>
-        <p>20 Karten an einem Tag</p>
+
+        <h4>
+          🧠 100 Karten
+        </h4>
+
+        <p>
+          Gelernt
+        </p>
+
+      </div>
+
+
+      <div class="small-card">
+
+        <h4>
+          ⚡ Schnell
+        </h4>
+
+        <p>
+          20 Karten an einem Tag
+        </p>
+
       </div>
 
     </div>
 
   </div>
+
 
   <!-- LETZTE AKTIVITÄT -->
-  <h3 style="margin-top: 25px;">Letzte Aktivität</h3>
+  <h3 style="margin-top: 25px;">
+    Letzte Aktivität
+  </h3>
+
 
   <div class="card">
 
     <div class="grid">
 
       <div class="small-card">
-        <h4>Heute</h4>
-        <p>34 Karten gelernt</p>
+
+        <h4>
+          Heute
+        </h4>
+
+        <p>
+          34 Karten gelernt
+        </p>
+
       </div>
 
-      <div class="small-card">
-        <h4>Gestern</h4>
-        <p>21 Karten gelernt</p>
-      </div>
 
       <div class="small-card">
-        <h4>Diese Woche</h4>
-        <p>146 Karten gelernt</p>
+
+        <h4>
+          Gestern
+        </h4>
+
+        <p>
+          21 Karten gelernt
+        </p>
+
+      </div>
+
+
+      <div class="small-card">
+
+        <h4>
+          Diese Woche
+        </h4>
+
+        <p>
+          146 Karten gelernt
+        </p>
+
       </div>
 
     </div>
 
   </div>
-
-  
 
 </div>
 
-<!-- NAV -->
+
+<!-- NAVIGATION -->
 <script src="../app-nav.js" defer></script>
 <app-nav></app-nav>
 

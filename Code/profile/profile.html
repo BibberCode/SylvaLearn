@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profil</title>
 
-<link rel="stylesheet" href="../home/frontend/style.css">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Profil</title>
+
+  <!-- LOADING SCREEN -->
+  <link rel="stylesheet" href="../loading-screen/loading-screen.css">
+
+  <!-- HAUPT-CSS -->
+  <link rel="stylesheet" href="../home/frontend/style.css">
 
 </head>
 
 <body>
+
+<!-- LOADING SCREEN -->
+<sylva-loading></sylva-loading>
+<script src="../loading-screen/loading-screen.js" defer></script>
+
 
 <div class="container">
 
@@ -18,82 +29,200 @@
     <div class="logo">Profil</div>
   </div>
 
+
   <!-- PROFIL CARD -->
   <div class="card profile-card">
 
-    <button class="avatar" onclick="document.getElementById('fileInput').click()">
-      <img id="avatarImg" alt="Profilbild" src="../home/frontend/avatar-placeholder.png">
+    <button
+      class="avatar"
+      onclick="document.getElementById('fileInput').click()">
+
+      <img
+        id="avatarImg"
+        alt="Profilbild"
+        src="../home/frontend/avatar-placeholder.png">
+
     </button>
-    <input type="file" id="fileInput" accept="image/*" hidden>
+
+    <input
+      type="file"
+      id="fileInput"
+      accept="image/*"
+      hidden>
+
 
     <h2 id="name">"[Name]"</h2>
-    <p class="subtext">Lernender</p>
+
+    <p class="subtext">
+      Lernender
+    </p>
+
 
     <div class="progress-bar">
-      <div class="progress" id="bar"></div>
+      <div
+        class="progress"
+        id="bar">
+      </div>
     </div>
 
-    <p><strong><span id="timer"></span> / <span id="maxMinutes"></span></strong></p>
 
-    <input id="nameInput" placeholder="Name ändern">
-    <div class="button" onclick="saveName()" style="margin-top: 10px;">Name ändern</div>
+    <p>
+      <strong>
+        <span id="timer"></span>
+        /
+        <span id="maxMinutes"></span>
+      </strong>
+    </p>
 
-    <input id="maxMinutesInput" placeholder="Lernzeit festlegen" style="margin-top: 30px;">
-    <div class="button" onclick="setMaxMinutes()" style="margin-top: 10px;">Lernzeit festlegen</div>
+
+    <input
+      id="nameInput"
+      placeholder="Name ändern">
+
+    <div
+      class="button"
+      onclick="saveName()"
+      style="margin-top: 10px;">
+
+      Name ändern
+
+    </div>
+
+
+    <input
+      id="maxMinutesInput"
+      placeholder="Lernzeit festlegen"
+      style="margin-top: 30px;">
+
+    <div
+      class="button"
+      onclick="setMaxMinutes()"
+      style="margin-top: 10px;">
+
+      Lernzeit festlegen
+
+    </div>
+
+
+    <div class="loading-setting">
+      <p>Loading-Screen 
+        <!-- From Uiverse.io by SmookyDev --> 
+        <div class="tooltip">
+          <div class="icon">i</div>
+          <div class="tooltiptext">Deaktiviert den Loading-Screen für schnellere Seitenwechsel. An manchen Stellen kann der Seitenübergang dadurch kurzzeitig weniger sauber wirken.</div>
+        </div>
+      </p>
+
+      <input type="checkbox" id="checkboxInput" onchange="toggleLoading()">
+      <label for="checkboxInput" class="toggleSwitch"></label>
+    </div>
+
   </div>
+
 
   <!-- STATS -->
   <div class="card">
+
     📊
-    <h3>Statistik</h3>
+
+    <h3>
+      Statistik
+    </h3>
+
 
     <div class="grid">
-      <div class="small-card">
-        <h4>🔥 <span id="streak">0</span></h4>
-        <p>Streak</p>
-      </div>
 
       <div class="small-card">
-        <h4 id="numberOfSets">0</h4>
-        <p>Lernsets</p>
+
+        <h4>
+          🔥 <span id="streak">0</span>
+        </h4>
+
+        <p>
+          Streak
+        </p>
+
       </div>
 
-      <div class="small-card">
-        <h4 id="avarage">0%</h4>
-        <p>Durchschnitt</p>
-      </div>
 
       <div class="small-card">
-        <h4 id="totalTime">0 min</h4>
-        <p>Gesamtzeit</p>
+
+        <h4 id="numberOfSets">
+          0
+        </h4>
+
+        <p>
+          Lernsets
+        </p>
+
       </div>
+
+
+      <div class="small-card">
+
+        <h4 id="avarage">
+          0%
+        </h4>
+
+        <p>
+          Durchschnitt
+        </p>
+
+      </div>
+
+
+      <div class="small-card">
+
+        <h4 id="totalTime">
+          0 min
+        </h4>
+
+        <p>
+          Gesamtzeit
+        </p>
+
+      </div>
+
     </div>
+
   </div>
+
 
   <!-- SUPPORT / FEEDBACK -->
   <div class="card">
 
-    <h3>Support</h3>
+    <h3>
+      Support
+    </h3>
+
     <p class="small-text">
-      Wenn du Fehler findest oder Ideen hast, kannst du sie hier melden.
+      Wenn du Fehler findest oder Ideen hast,
+      kannst du sie hier melden.
     </p>
 
-    <div class="button" onclick="location.href='./feedback.html'">
+    <div
+      class="button"
+      onclick="location.href='./feedback.html'">
+
       Feedback & Bugs melden
+
     </div>
 
-  </div> 
+  </div>
 
 </div>
 
-<!-- NAV -->
+
+<!-- NAVIGATION -->
 <script src="../app-nav.js" defer></script>
 <app-nav></app-nav>
+
 
 <!-- SCRIPTS -->
 <script src="../profile/profile-script.js" defer></script>
 <script src="../home/frontend/uiTime.js" defer></script>
 <script src="../home/frontend/streak.js" defer></script>
+<script src="./loading-toggle.js" defer></script>
 
 </body>
 </html>

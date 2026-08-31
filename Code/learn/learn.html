@@ -1,33 +1,76 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Learning...</title>
 
-<link rel="stylesheet" href="../home/frontend/style.css">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Learning...</title>
+
+  <!-- LOADING SCREEN -->
+  <link rel="stylesheet" href="../loading-screen/loading-screen.css">
+
+  <!-- HAUPT-CSS -->
+  <link rel="stylesheet" href="../home/frontend/style.css">
 
 </head>
 
 <body>
 
+<!-- LOADING SCREEN -->
+<sylva-loading></sylva-loading>
+<script src="../loading-screen/loading-screen.js" defer></script>
+
+
 <div class="container">
-    <!-- HEADER -->
-    <div class="header">
-    <div class="logo">Lernen</div>
-    <div class="streak">🔥 <span id="streak">0</span> Streak</div>
+
+  <!-- HEADER -->
+  <div class="header">
+
+    <div class="logo">
+      Lernen
     </div>
 
-    <div class="card">
-        <h3 style="margin-bottom: 5px;">Hier kannst du lernen!</h3>
-        <div class="subtext" style="margin-bottom: 20px; margin-top: 10px;"">Wähle ein Lernset aus, um loszulegen. Oder erstelle ein <a href="../cards/cards.html">neues Lernset</a>.</div>
-        <div class="grid" id="learnsetList"></div>
+    <div class="streak">
+      🔥 <span id="streak">0</span> Streak
     </div>
 
+  </div>
 
-<!-- NAV -->
+
+  <!-- LERNEN -->
+  <div class="card">
+
+    <h3 style="margin-bottom: 5px;">
+      Hier kannst du lernen!
+    </h3>
+
+    <div
+      class="subtext"
+      style="margin-bottom: 20px; margin-top: 10px;">
+
+      Wähle ein Lernset aus, um loszulegen.
+      Oder erstelle ein
+      <a href="../cards/cards.html">
+        neues Lernset
+      </a>.
+
+    </div>
+
+    <div
+      class="grid"
+      id="learnsetList">
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- NAVIGATION -->
 <script src="../app-nav.js" defer></script>
 <app-nav></app-nav>
+
 
 <!-- SCRIPTS -->
 <script src="../home/frontend/uiTime.js" defer></script>
