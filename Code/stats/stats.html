@@ -13,8 +13,11 @@
   <!-- LOADING SCREEN -->
   <link rel="stylesheet" href="../loading-screen/loading-screen.css">
 
-  <!-- HAUPT-CSS -->
+  <!-- HAUPT-CSS (wiederverwendet von Home) -->
   <link rel="stylesheet" href="../home/frontend/style.css">
+
+  <!-- STATS-ERGÄNZUNG (nur Chart + Listen, keine Duplikate) -->
+  <link rel="stylesheet" href="./frontend/stats.css">
 
 </head>
 
@@ -32,14 +35,6 @@
 
     <div class="logo">
       Stats
-    </div>
-
-    <div
-      class="logo"
-      style="color: red;">
-
-      Baustelle
-
     </div>
 
     <div class="streak">
@@ -67,12 +62,12 @@
 
       <div class="small-card">
 
-        <h4>
-          124
+        <h4 id="statLearned">
+          0
         </h4>
 
-        <p>
-          Gelernte Karten
+        <p id="statLearnedSub">
+          Heute noch nichts gelernt
         </p>
 
       </div>
@@ -80,12 +75,12 @@
 
       <div class="small-card">
 
-        <h4>
-          87%
+        <h4 id="statQuote">
+          0%
         </h4>
 
-        <p>
-          Erfolgsquote
+        <p id="statQuoteSub">
+          Noch keine Antworten heute
         </p>
 
       </div>
@@ -93,12 +88,12 @@
 
       <div class="small-card">
 
-        <h4>
-          23h
+        <h4 id="statTime">
+          0 min
         </h4>
 
-        <p>
-          Lernzeit
+        <p id="statTimeSub">
+          Heute 0 min gelernt
         </p>
 
       </div>
@@ -117,144 +112,26 @@
   <div class="card">
 
     <div
-      style="
-        display: flex;
-        align-items: flex-end;
-        gap: 10px;
-        height: 180px;
-        margin-top: 10px;
-      ">
-
-      <div class="bar">
-        <div style="height: 40%"></div>
-        <span>Mo</span>
-      </div>
-
-      <div class="bar">
-        <div style="height: 70%"></div>
-        <span>Di</span>
-      </div>
-
-      <div class="bar">
-        <div style="height: 55%"></div>
-        <span>Mi</span>
-      </div>
-
-      <div class="bar">
-        <div style="height: 90%"></div>
-        <span>Do</span>
-      </div>
-
-      <div class="bar">
-        <div style="height: 65%"></div>
-        <span>Fr</span>
-      </div>
-
-      <div class="bar">
-        <div style="height: 30%"></div>
-        <span>Sa</span>
-      </div>
-
-      <div class="bar">
-        <div style="height: 80%"></div>
-        <span>So</span>
-      </div>
-
+      class="week-chart"
+      id="weekChart">
+      <!-- wird von stats-render.js befüllt (Mo–So, live aus dailyCards_history + heute) -->
     </div>
 
   </div>
 
 
-  <!-- FÄCHER -->
+  <!-- LERNSETS -->
   <h3 style="margin-top: 25px;">
-    Fächer
+    Lernsets
   </h3>
 
 
   <div class="card">
 
-    <div class="small-card">
-
-      <h4>
-        Biologie
-      </h4>
-
-      <p>
-        42 Karten gelernt
-      </p>
-
-      <div class="progress-bar">
-
-        <div
-          class="progress"
-          style="width: 92%;">
-
-        </div>
-
-      </div>
-
-      <p class="small-text">
-        92% richtig beantwortet
-      </p>
-
-    </div>
-
-
     <div
-      class="small-card"
-      style="margin-top: 12px;">
-
-      <h4>
-        Mathematik
-      </h4>
-
-      <p>
-        31 Karten gelernt
-      </p>
-
-      <div class="progress-bar">
-
-        <div
-          class="progress"
-          style="width: 74%;">
-
-        </div>
-
-      </div>
-
-      <p class="small-text">
-        74% richtig beantwortet
-      </p>
-
-    </div>
-
-
-    <div
-      class="small-card"
-      style="margin-top: 12px;">
-
-      <h4>
-        Geschichte
-      </h4>
-
-      <p>
-        19 Karten gelernt
-      </p>
-
-      <div class="progress-bar">
-
-        <div
-          class="progress"
-          style="width: 85%;">
-
-        </div>
-
-      </div>
-
-      <p class="small-text">
-        85% richtig beantwortet
-      </p>
-
+      class="sets-list"
+      id="setsStats">
+      <!-- wird von stats-render.js befüllt (aus learnsets[].allCardsAverage/rightCardsAverage) -->
     </div>
 
   </div>
@@ -268,46 +145,10 @@
 
   <div class="card">
 
-    <div class="grid">
-
-      <div class="small-card">
-
-        <h4>
-          🔥 7 Tage
-        </h4>
-
-        <p>
-          Streak erreicht
-        </p>
-
-      </div>
-
-
-      <div class="small-card">
-
-        <h4>
-          🧠 100 Karten
-        </h4>
-
-        <p>
-          Gelernt
-        </p>
-
-      </div>
-
-
-      <div class="small-card">
-
-        <h4>
-          ⚡ Schnell
-        </h4>
-
-        <p>
-          20 Karten an einem Tag
-        </p>
-
-      </div>
-
+    <div
+      class="grid"
+      id="achievementGrid">
+      <!-- wird von stats-render.js befüllt (Streak / 100 Karten / 20 am Tag) -->
     </div>
 
   </div>
@@ -329,8 +170,8 @@
           Heute
         </h4>
 
-        <p>
-          34 Karten gelernt
+        <p id="activityToday">
+          0 Karten gelernt
         </p>
 
       </div>
@@ -342,8 +183,8 @@
           Gestern
         </h4>
 
-        <p>
-          21 Karten gelernt
+        <p id="activityYesterday">
+          0 Karten gelernt
         </p>
 
       </div>
@@ -355,8 +196,8 @@
           Diese Woche
         </h4>
 
-        <p>
-          146 Karten gelernt
+        <p id="activityWeek">
+          0 Karten gelernt
         </p>
 
       </div>
@@ -375,8 +216,11 @@
 <app-nav></app-nav>
 
 
-<!-- SCRIPT -->
-<script src="../home/frontend/uiTime.js" defer></script>
+<!-- STATS-SCRIPTS (Basis: Store + Render, gleiche Keys wie Lernen/Home) -->
+<script src="../home/frontend/countingTime.js" defer></script>
+<script src="../home/frontend/streak.js" defer></script>
+<script src="./frontend/stats-store.js" defer></script>
+<script src="./frontend/stats-render.js" defer></script>
 
 </body>
 </html>

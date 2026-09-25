@@ -4,9 +4,6 @@ import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlon
 let currentCard = null;
 let lastCard = null;
 
-let allCards = 0;
-let rightCards = 0;
-
 let reverse = localStorage.getItem("reverse") === "true";
 let cardReverse = reverse;
 let level = 3;
@@ -30,9 +27,6 @@ function getSet() {
 function init() {
   const set = getSet();
   if (!set) return;
-
-  allCards = set.allCardsAverage ?? 0;
-  rightCards = set.rightCardsAverage ?? 0;
 
   updateFinishedCardsBar();
   nextCard();
@@ -64,21 +58,7 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 });
 
-/* ---------------- SAVE ---------------- */
-
-function save() {
-  const learnsets = getLearnsets();
-  const set = getSet();
-
-  if (!set) return;
-
-  set.allCardsAverage = allCards;
-  set.rightCardsAverage = rightCards;
-
-  localStorage.setItem("learnsets", JSON.stringify(learnsets));
-}
-
-/* ---------------- ANSWERS ---------------- */
+/* ---------------- ANSWERS (Zählung läuft über stats/avarage*-Module) ---------------- */
 
 function compareAnswer(answer) {
   if (answer === "right") {

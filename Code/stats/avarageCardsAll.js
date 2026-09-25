@@ -1,94 +1,131 @@
-let dailyCards = JSON.parse(localStorage.getItem("dailyCardsAll")) ?? 0;
-let rightCards = JSON.parse(localStorage.getItem("rightCardsAll")) ?? 0;
+/* =========================
+   SYLVALEARN – GLOBALE TAGESZÄHLER (alle Sets)
+   Fix: robust + dynamisch, gleiche API wie bisher.
+   Keys: dailyCardsAll / rightCardsAll / dailyCards_date / dailyCards_history
+   ========================= */
 
+const KEY_ALL = "dailyCardsAll";
+const KEY_RIGHT = "rightCardsAll";
 const KEY_HISTORY = "dailyCards_history";
 const KEY_DATE = "dailyCards_date";
 
-let history = JSON.parse(localStorage.getItem(KEY_HISTORY)) || [];
+/* ---------- SAFE READ ---------- */
 
-const today = new Date().toDateString();
-let storedDate = localStorage.getItem(KEY_DATE);
-
-/* ---------------- DAY RESET ---------------- */
-
-if (!storedDate) {
-  localStorage.setItem(KEY_DATE, today);
-  storedDate = today;
+function readNumber(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw === null || raw === undefined || raw === "") return 0;
+    // verträgt "5" und JSON-"5"
+    try {
+      const parsed = JSON.parse(raw);
+      if (typeof parsed === "number" && Number.isFinite(parsed)) return parsed;
+    } catch {
+      /* kein JSON – weiter mit Number() */
+    }
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : 0;
+  } catch {
+    return 0;
+  }
 }
 
-if (storedDate !== today) {
+function readHistory() {
+  try {
+    const raw = localStorage.getItem(KEY_HISTORY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
-  const average =
-    dailyCards > 0
-      ? Math.round((rightCards / dailyCards) * 100)
-      : 0;
+/* ---------- DAY RESET ---------- */
 
-  history.push({
-    date: storedDate,
-    value: {
-      dailyCards,
-      rightCards,
-      average
-    }
-  });
-
-  // Optional: nur letzte 30 Tage behalten
-  if (history.length > 30) {
-    history.shift();
+function ensureDayRollover() {
+  const today = new Date().toDateString();
+  let storedDate = null;
+  try {
+    storedDate = localStorage.getItem(KEY_DATE);
+  } catch {
+    storedDate = null;
   }
 
-  dailyCards = 0;
-  rightCards = 0;
+  if (!storedDate) {
+    try {
+      localStorage.setItem(KEY_DATE, today);
+    } catch {}
+    return;
+  }
 
-  localStorage.setItem(KEY_HISTORY, JSON.stringify(history));
-  localStorage.setItem(KEY_DATE, today);
+  if (storedDate !== today) {
+    const dailyCards = readNumber(KEY_ALL);
+    const rightCards = readNumber(KEY_RIGHT);
+    const history = readHistory();
 
-  save();
+    // Leere Tage nicht zumüllen – nur sichern wenn was gelernt wurde
+    if (dailyCards > 0) {
+      const average = Math.round((rightCards / dailyCards) * 100);
+      history.push({
+        date: storedDate,
+        value: { dailyCards, rightCards, average },
+      });
+      if (history.length > 30) history.splice(0, history.length - 30);
+      try {
+        localStorage.setItem(KEY_HISTORY, JSON.stringify(history));
+      } catch {}
+    }
+
+    try {
+      localStorage.setItem(KEY_ALL, JSON.stringify(0));
+      localStorage.setItem(KEY_RIGHT, JSON.stringify(0));
+      localStorage.setItem(KEY_DATE, today);
+    } catch {}
+  }
 }
 
-/* ---------------- SAVE ---------------- */
+// beim Import (Lernseiten) sofort rollen
+ensureDayRollover();
 
-function save() {
-  localStorage.setItem(
-    "dailyCardsAll",
-    JSON.stringify(dailyCards)
-  );
+/* ---------- SAVE ---------- */
 
-  localStorage.setItem(
-    "rightCardsAll",
-    JSON.stringify(rightCards)
-  );
+function save(all, right) {
+  try {
+    localStorage.setItem(KEY_ALL, JSON.stringify(all));
+    localStorage.setItem(KEY_RIGHT, JSON.stringify(right));
+  } catch {}
 }
 
-/* ---------------- ANSWERS ---------------- */
+/* ---------- ANSWERS (frisch lesen statt Cache) ---------- */
 
 function rightAnswerAll() {
-  rightCards++;
-  dailyCards++;
-  save();
+  ensureDayRollover();
+  const all = readNumber(KEY_ALL) + 1;
+  const right = readNumber(KEY_RIGHT) + 1;
+  save(all, right);
 }
 
 function wrongAnswerAll() {
-  dailyCards++;
-  save();
+  ensureDayRollover();
+  const all = readNumber(KEY_ALL) + 1;
+  const right = readNumber(KEY_RIGHT);
+  save(all, right);
 }
 
-/* ---------------- AVERAGE ---------------- */
+/* ---------- AVERAGE ---------- */
 
 function getAverageCards() {
-  return dailyCards > 0
-    ? Math.round((rightCards / dailyCards) * 100)
-    : 0;
+  ensureDayRollover();
+  const all = readNumber(KEY_ALL);
+  const right = readNumber(KEY_RIGHT);
+  return all > 0 ? Math.round((right / all) * 100) : 0;
 }
 
-/* ---------------- EXPORT ---------------- */
+/* ---------------- EXPORT (API unverändert) ---------------- */
 
-export {
-  rightAnswerAll,
-  wrongAnswerAll,
-  getAverageCards
-};
+export { rightAnswerAll, wrongAnswerAll, getAverageCards, ensureDayRollover };
 
 window.rightAnswerAll = rightAnswerAll;
 window.wrongAnswerAll = wrongAnswerAll;
 window.getAverageCards = getAverageCards;
+window.ensureDayRolloverAll = ensureDayRollover;

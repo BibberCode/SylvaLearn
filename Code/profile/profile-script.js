@@ -1,106 +1,17 @@
 function saveName() {
   const input = document.getElementById("nameInput");
-  let name = input?.value || "";
+  let name = (input?.value || "").trim().slice(0, 24);
 
-  /* ---------------- BLOCKLIST ---------------- */
+  if (!name) return;
 
-  const forbiddenNames = new Set([
-    /* System / reserviert */
-    "admin",
-    "administrator",
-    "root",
-    "system",
-    "moderator",
-    "mod",
-    "support",
-    "help",
-    "staff",
-    "owner",
-    "superuser",
-    "user",
-    "guest",
-    "test",
-    "null",
-    "undefined",
-    "api",
-    "login",
-    "register",
-    "signup",
-    "dashboard",
-    "settings",
-    "home",
-    "profile",
-    "account",
-    "config",
-    "console",
+  /* ---------------- ZENTRALER FILTER (shared/name-filter.js) ---------------- */
 
-    /* Englisch toxisch */
-    "idiot",
-    "stupid",
-    "dumb",
-    "loser",
-    "trash",
-    "garbage",
-    "moron",
-    "asshole",
-    "bitch",
-    "shit",
-    "fuck",
-    "crap",
-
-    /* Deutsch toxisch */
-    "idiot",
-    "dumm",
-    "dummkopf",
-    "verlierer",
-    "versager",
-    "arschloch",
-    "scheisse",
-    "scheiße",
-    "mist",
-    "trottel",
-    "depp",
-    "volldepp",
-    "spinner",
-    "opfer",
-
-    /* Platzhalter für schwerere Inhalte */
-    "hurensohn",
-    "nigga",
-    "bastard", 
-    
-    "bibber",
-  ]);
-
-  /* ---------------- NORMALIZE ---------------- */
-
-  function normalize(str) {
-    return (str || "")
-      .toLowerCase()
-      .trim()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]/gi, ""); // alles raus
-  }
-
-  /* ---------------- ANTI BYPASS ---------------- */
-
-  function cleanForCheck(str) {
-    return normalize(str)
-      .replace(/0/g, "o")
-      .replace(/1/g, "i")
-      .replace(/3/g, "e")
-      .replace(/4/g, "a")
-      .replace(/5/g, "s")
-      .replace(/7/g, "t");
-  }
-
-  const cleanName = cleanForCheck(name);
-
-  /* ---------------- CHECK ---------------- */
-
-  if (forbiddenNames.has(cleanName)) {
-    name = "Error404: NameNotFound";
+  try {
+    if (window.SylvaNameFilter && window.SylvaNameFilter.isForbiddenName(name).forbidden) {
+      name = window.SylvaNameFilter.PROFILE_FALLBACK;
+    }
+  } catch {
+    /* Filter nicht geladen – ohne Block speichern (Fail-open) */
   }
 
   /* ---------------- OUTPUT ---------------- */
@@ -123,8 +34,17 @@ function setMaxMinutes() {
 
 window.addEventListener("DOMContentLoaded", () => {
 
-  // NAME
-  const savedName = localStorage.getItem("name");
+  // NAME (inkl. Migration bereits gespeicherter verbotener Namen)
+  let savedName = "";
+  try {
+    if (window.SylvaNameFilter) {
+      savedName = window.SylvaNameFilter.migrateStoredProfileName() || "";
+    } else {
+      savedName = localStorage.getItem("name") || "";
+    }
+  } catch {
+    savedName = "";
+  }
 
   const nameEl = document.getElementById("name");
   const nameInput = document.getElementById("nameInput");

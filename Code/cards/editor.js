@@ -152,9 +152,18 @@ document.addEventListener("focusout", (e) => {
 // ===============================
 function saveName() {
   const input = document.getElementById("setName");
-  const newName = input?.value.trim();
+  const newName = (input?.value || "").trim().slice(0, 40);
 
   if (!newName) return;
+
+  /* Verbotene Lernset-Namen (zentraler Filter) */
+  try {
+    if (window.SylvaNameFilter && window.SylvaNameFilter.isForbiddenName(newName).forbidden) {
+      alert("Dieser Lernset-Name ist nicht erlaubt.");
+      if (input) input.value = currentSetName;
+      return;
+    }
+  } catch {}
 
   let learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
 
@@ -163,6 +172,16 @@ function saveName() {
   );
 
   if (!set) return;
+
+  /* Doppelter Name (case-insensitive, außer das eigene Set) */
+  const duplicate = learnsets.some(
+    s => s !== set && (s.name || "").trim().toLowerCase() === newName.toLowerCase()
+  );
+  if (duplicate) {
+    alert("Ein Lernset mit diesem Namen existiert bereits.");
+    if (input) input.value = currentSetName;
+    return;
+  }
 
   set.name = newName;
 

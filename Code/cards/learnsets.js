@@ -23,13 +23,21 @@ function addLearnset() {
   const titleEl = document.getElementById("title");
   const descEl = document.getElementById("description");
 
-  const title = titleEl.value.trim();
+  const title = titleEl.value.trim().slice(0, 40);
   let description = descEl.value;
 
   if (!title) {
     alert("Bitte gib einen Namen ein!")
     return;
   }
+
+  /* Verbotene Lernset-Namen (zentraler Filter) */
+  try {
+    if (window.SylvaNameFilter && window.SylvaNameFilter.isForbiddenName(title).forbidden) {
+      alert("Dieser Lernset-Name ist nicht erlaubt.");
+      return;
+    }
+  } catch {}
 
   if (!description) {
     description = "Keine Beschreibung vorhanden.";

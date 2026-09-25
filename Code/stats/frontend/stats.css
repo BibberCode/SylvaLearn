@@ -1,0 +1,110 @@
+/* =========================
+   STATS – Balkendiagramm & Listen
+   Ergänzt home/frontend/style.css (card, grid,
+   small-card, progress-bar bleiben unverändert).
+   Theme-fähig über CSS-Variablen.
+   ========================= */
+
+/* Wochenchart: 7 Balken nebeneinander */
+.week-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 180px;
+  margin-top: 10px;
+}
+
+.bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  height: 100%;
+  min-width: 0;
+}
+
+.bar-track {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  background: linear-gradient(
+    to bottom,
+    var(--progress-track-from),
+    var(--progress-track-to)
+  );
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 24px;
+}
+
+.bar-fill {
+  width: 100%;
+  min-height: 4px;
+  background: linear-gradient(
+    180deg,
+    var(--primary-light),
+    var(--primary)
+  );
+  border-radius: 12px;
+  transition: height 0.35s ease;
+}
+
+.bar span {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.bar small {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.bar.today .bar-track {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.bar.today span {
+  color: var(--primary);
+}
+
+/* Lernset-Liste: Abstände zwischen Einträgen */
+.sets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sets-list .small-card {
+  cursor: default;
+}
+
+.set-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Achievements: entsperrt vs. gesperrt */
+.achievement.locked {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+}
+
+.achievement.unlocked {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+@media (max-width: 600px) {
+  .week-chart {
+    gap: 6px;
+    height: 150px;
+  }
+}
