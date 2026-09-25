@@ -1,0 +1,11 @@
+{
+  "name": "sylvalearn",
+  "private": true,
+  "scripts": {
+    "version:patch": "node scripts/bump-version.mjs patch",
+    "version:minor": "node scripts/bump-version.mjs minor",
+    "version:major": "node scripts/bump-version.mjs major",
+    "version:sync": "node scripts/bump-version.mjs --sync",
+    "version:check": "node scripts/bump-version.mjs --check"
+  }
+}
