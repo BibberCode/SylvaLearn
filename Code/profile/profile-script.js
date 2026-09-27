@@ -32,6 +32,45 @@ function setMaxMinutes() {
   localStorage.setItem("maxMinutes", maxMinutes);
 }
 
+/* Verkleinert das Profilbild auf max. 256px (längste Seite) und
+   speichert es als JPEG – sonst sprengen Handy-Fotos das
+   localStorage-Limit und blähen das JSON-Backup auf mehrere MB auf.
+   Fällt bei Fehlern auf das Original zurück (Fail-open). */
+function downscaleAvatar(dataUrl, cb, maxSize) {
+  const done = (out) => { try { cb(out); } catch { /* kein Bild – egal */ } };
+  try {
+    if (typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) {
+      done(dataUrl);
+      return;
+    }
+    const size = maxSize || 256;
+    const image = new Image();
+    image.onload = () => {
+      try {
+        const scale = Math.min(1, size / Math.max(image.width || 1, image.height || 1));
+        // Bereits klein genug und kein PNG-Riese? Original behalten.
+        if (scale >= 1 && dataUrl.length < 200 * 1024) {
+          done(dataUrl);
+          return;
+        }
+        const w = Math.max(1, Math.round((image.width || size) * scale));
+        const h = Math.max(1, Math.round((image.height || size) * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(image, 0, 0, w, h);
+        done(canvas.toDataURL("image/jpeg", 0.85));
+      } catch {
+        done(dataUrl);
+      }
+    };
+    image.onerror = () => done(dataUrl);
+    image.src = dataUrl;
+  } catch {
+    done(dataUrl);
+  }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
 
   // NAME (inkl. Migration bereits gespeicherter verbotener Namen)
@@ -72,6 +111,17 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedAvatar = localStorage.getItem("avatar");
   if (savedAvatar && img) {
     img.src = savedAvatar;
+    // Alt-Bilder (vor der Verkleinerung gespeichert) einmalig nachholen,
+    // damit sie nicht localStorage und Backup sprengen.
+    if (savedAvatar.length > 500 * 1024 && savedAvatar.startsWith("data:image/")) {
+      downscaleAvatar(savedAvatar, (small) => {
+        if (small && small.length < savedAvatar.length) {
+          try {
+            localStorage.setItem("avatar", small);
+          } catch { /* Speicher voll – altes Bild bleibt */ }
+        }
+      });
+    }
   }
 
   if (input) {
@@ -82,10 +132,15 @@ window.addEventListener("DOMContentLoaded", () => {
       const reader = new FileReader();
 
       reader.onload = () => {
-        const dataUrl = reader.result;
-
-        if (img) img.src = dataUrl;
-        localStorage.setItem("avatar", dataUrl);
+        downscaleAvatar(reader.result, (dataUrl) => {
+          if (img) img.src = dataUrl;
+          try {
+            localStorage.setItem("avatar", dataUrl);
+          } catch {
+            /* Speicher voll (z. B. riesiges Bild) – Bild bleibt
+               für die Sitzung sichtbar, wird aber nicht persistiert. */
+          }
+        });
       };
 
       reader.readAsDataURL(file);

@@ -14,6 +14,24 @@ function saveLearnsets(data) {
   localStorage.setItem("learnsets", JSON.stringify(data));
 }
 
+/* Stabile ID für Duplikaterkennung (Import/Export).
+   Alt-Sets ohne ID werden beim Öffnen der
+   Profilseite nachgerüstet (siehe
+   Code/data/import-export/migrations.js). */
+function generateLearnsetId() {
+  try {
+    if (crypto && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+  } catch {}
+  return (
+    "sylva-" +
+    Date.now().toString(36) +
+    "-" +
+    Math.floor(Math.random() * 0xffffff).toString(36).padStart(4, "0")
+  );
+}
+
 
 /* =========================
    ADD LEARNSET
@@ -57,6 +75,7 @@ function addLearnset() {
 
   learnsets.push(
   {
+    id: generateLearnsetId(),
     name: title,
     emoji: "📘",
     description,
@@ -116,6 +135,23 @@ function renderLearnsets() {
 
     card.append(title, count, desc);
 
+    const actions = document.createElement("div");
+    actions.className = "sylva-card-actions";
+
+    const exportBtn = document.createElement("button");
+    exportBtn.type = "button";
+    exportBtn.className = "sylva-export-btn";
+    exportBtn.textContent = "📤 Exportieren";
+    exportBtn.setAttribute("aria-label", "Lernset " + set.name + " als Markdown exportieren");
+
+    exportBtn.onclick = (e) => {
+      e.stopPropagation();
+      exportSingleLearnset(set.name);
+    };
+
+    actions.appendChild(exportBtn);
+    card.appendChild(actions);
+
     card.onclick = () => {
       localStorage.setItem("currentSetName", set.name);
       window.location.href = "./editor.html";
@@ -123,6 +159,28 @@ function renderLearnsets() {
 
     container.appendChild(card);
   });
+}
+
+
+/* =========================
+   EXPORT (einzelnes Lernset als Markdown)
+   Nutzt Code/data/import-export/exporter.js –
+   ohne eigene Datenhaltung.
+======================== */
+
+function exportSingleLearnset(name) {
+  try {
+    if (!window.SylvaExporter) return;
+
+    const res = window.SylvaExporter.exportLearnsets([name]);
+
+    if (!res.ok) {
+      alert(res.error || "Export fehlgeschlagen.");
+    }
+  } catch (e) {
+    console.error("SylvaLearn: Export fehlgeschlagen:", e);
+    alert("Export fehlgeschlagen.");
+  }
 }
 
 

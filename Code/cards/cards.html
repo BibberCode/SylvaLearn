@@ -16,6 +16,9 @@
   <!-- Normales CSS -->
   <link rel="stylesheet" href="../home/frontend/style.css">
 
+  <!-- DATENVERWALTUNG (Export-Button) -->
+  <link rel="stylesheet" href="../data/import-export/import-export.css">
+
   <!-- Loading Screen JS -->
   <script src="../loading-screen/loading-screen.js" defer></script>
 </head>
@@ -78,6 +81,117 @@
 
     </div>
 
+
+    <!-- LERNSETS IMPORTIEREN -->
+    <div class="card">
+
+      <h3>📥 Lernsets importieren</h3>
+
+      <p class="small-text">
+        Markdown (.md) oder Backup (.json).
+        Dateien werden erst geprüft –
+        du bestätigst den Import in einer Vorschau.
+      </p>
+
+      <input
+        type="file"
+        id="importInput"
+        accept=".md,.markdown,.json"
+        multiple
+        hidden>
+
+      <div
+        class="sylva-dropzone"
+        id="importDropzone"
+        role="button"
+        tabindex="0"
+        aria-label="Dateien zum Importieren auswählen oder hierher ziehen">
+        <strong>Dateien wählen oder hierher ziehen</strong><br>
+        .md oder .json – mehrere Dateien möglich
+      </div>
+
+      <div
+        class="sylva-status"
+        id="importStatus"
+        role="status"
+        aria-live="polite">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- IMPORT-VORSCHAU -->
+  <div
+    class="sylva-modal-overlay hidden"
+    id="importModal"
+    aria-hidden="true">
+
+    <div
+      class="sylva-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="importTitle">
+
+      <header>
+        <h3 id="importTitle">Import</h3>
+        <p
+          class="sylva-modal-summary"
+          id="importSummary">
+        </p>
+        <p
+          class="sylva-modal-summary"
+          id="importSubSummary">
+        </p>
+      </header>
+
+      <div class="sylva-modal-body">
+        <div id="importFileErrors"></div>
+        <div id="importBackupDetails"></div>
+        <div id="importItems"></div>
+
+        <label
+          class="sylva-checkline"
+          id="backupMetaBox"
+          style="display: none;">
+          <input
+            type="checkbox"
+            id="restoreMetaCheck"
+            checked>
+          <span>
+            Einstellungen, Lernzeit und
+            Statistiken aus dem Backup
+            wiederherstellen
+          </span>
+        </label>
+
+        <p
+          class="sylva-preview-warning"
+          id="importHint"
+          style="display: none;"
+          role="status">
+        </p>
+      </div>
+
+      <footer>
+        <button
+          class="button-secondary"
+          id="importCancelBtn"
+          type="button">
+          Abbrechen
+        </button>
+
+        <button
+          class="button"
+          id="importConfirmBtn"
+          type="button">
+          Importieren
+        </button>
+      </footer>
+
+    </div>
+
   </div>
 
 
@@ -94,7 +208,15 @@
   <script src="../home/frontend/countingTime.js" defer></script>
   <script src="../home/frontend/streak.js" defer></script>
 
+  <script src="../data/import-export/migrations.js" defer></script>
+  <script src="../data/import-export/validator.js" defer></script>
+  <script src="../data/import-export/markdown.js" defer></script>
+  <script src="../data/import-export/json.js" defer></script>
+  <script src="../data/import-export/exporter.js" defer></script>
+  <script src="../data/import-export/importer.js" defer></script>
+
   <script src="./learnsets.js" defer></script>
+  <script src="../data/import-export/data-manager.js" defer></script>
 
 </body>
 </html>

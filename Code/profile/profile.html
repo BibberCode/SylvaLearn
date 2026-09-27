@@ -16,6 +16,9 @@
   <!-- HAUPT-CSS -->
   <link rel="stylesheet" href="../home/frontend/style.css">
 
+  <!-- DATENVERWALTUNG (Import/Export) -->
+  <link rel="stylesheet" href="../data/import-export/import-export.css">
+
 </head>
 
 <body>
@@ -202,6 +205,142 @@
   </div>
 
 
+  <!-- DATENVERWALTUNG -->
+  <div class="card">
+
+    <h3>
+      💾 Datenverwaltung
+    </h3>
+
+    <p class="small-text">
+      Im- und Export einzelner Lernsets
+      geht direkt unter „Karten“ – hier
+      gibt es nur noch das vollständige
+      Backup. Alles bleibt lokal auf
+      deinem Gerät.
+    </p>
+
+
+    <!-- BACKUP -->
+    <div class="sylva-data-section">
+
+      <h4>🗄️ Backup</h4>
+
+      <p class="small-text">
+        Vollständige Sicherung aller Lernsets,
+        Einstellungen inkl. Profilbild und Statistiken als JSON.
+      </p>
+
+      <div
+        class="button"
+        id="backupExportBtn"
+        role="button"
+        tabindex="0"
+        style="margin-top: 10px;">
+        Backup exportieren
+      </div>
+
+      <button
+        class="button-secondary"
+        id="backupImportBtn"
+        type="button"
+        style="margin-top: 10px;">
+        Backup importieren
+      </button>
+
+      <div
+        class="sylva-status"
+        id="backupStatus"
+        role="status"
+        aria-live="polite">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- IMPORT-VORSCHAU (für Backup-Import;
+       Lernset-Import liegt unter „Karten“) -->
+  <input
+    type="file"
+    id="importInput"
+    accept=".json"
+    multiple
+    hidden>
+
+  <div
+    class="sylva-modal-overlay hidden"
+    id="importModal"
+    aria-hidden="true">
+
+    <div
+      class="sylva-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="importTitle">
+
+      <header>
+        <h3 id="importTitle">Import</h3>
+        <p
+          class="sylva-modal-summary"
+          id="importSummary">
+        </p>
+        <p
+          class="sylva-modal-summary"
+          id="importSubSummary">
+        </p>
+      </header>
+
+      <div class="sylva-modal-body">
+        <div id="importFileErrors"></div>
+        <div id="importBackupDetails"></div>
+        <div id="importItems"></div>
+
+        <label
+          class="sylva-checkline"
+          id="backupMetaBox"
+          style="display: none;">
+          <input
+            type="checkbox"
+            id="restoreMetaCheck"
+            checked>
+          <span>
+            Einstellungen, Profilbild, Lernzeit und
+            Statistiken aus dem Backup
+            wiederherstellen
+          </span>
+        </label>
+
+        <p
+          class="sylva-preview-warning"
+          id="importHint"
+          style="display: none;"
+          role="status">
+        </p>
+      </div>
+
+      <footer>
+        <button
+          class="button-secondary"
+          id="importCancelBtn"
+          type="button">
+          Abbrechen
+        </button>
+
+        <button
+          class="button"
+          id="importConfirmBtn"
+          type="button">
+          Importieren
+        </button>
+      </footer>
+
+    </div>
+
+  </div>
+
+
   <!-- SUPPORT / FEEDBACK -->
   <div class="card">
 
@@ -236,7 +375,14 @@
 
 <!-- SCRIPTS -->
 <script src="../shared/name-filter.js" defer></script>
+<script src="../data/import-export/migrations.js" defer></script>
+<script src="../data/import-export/validator.js" defer></script>
+<script src="../data/import-export/markdown.js" defer></script>
+<script src="../data/import-export/json.js" defer></script>
+<script src="../data/import-export/exporter.js" defer></script>
+<script src="../data/import-export/importer.js" defer></script>
 <script src="../profile/profile-script.js" defer></script>
+<script src="../data/import-export/data-manager.js" defer></script>
 <script src="../home/frontend/uiTime.js" defer></script>
 <script src="../home/frontend/countingTime.js" defer></script>
 <script src="../home/frontend/streak.js" defer></script>

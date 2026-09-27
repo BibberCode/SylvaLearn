@@ -1,0 +1,396 @@
+/* =========================
+   SYLVALEARN – DATENVERWALTUNG (Import/Export)
+   Ergänzung zu Code/home/frontend/style.css.
+   Nutzt ausschließlich bestehende CSS-Variablen,
+   daher automatisch Dark/Light-kompatibel.
+   ========================= */
+
+/* ---------- EXPORT AM LERNSET (Karten-Bereich / Editor) ---------- */
+
+.sylva-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sylva-export-btn {
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--mode-switch-bg);
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.sylva-export-btn:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.sylva-export-btn:active {
+  opacity: 0.9;
+}
+
+/* ---------- ABSCHNITTE ---------- */
+
+.sylva-data-section {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--card-border);
+  text-align: left;
+}
+
+.sylva-data-section:first-of-type {
+  border-top: none;
+  margin-top: 6px;
+  padding-top: 0;
+}
+
+.sylva-data-section h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+/* Sekundärer Button im Sylva-Stil */
+.button-secondary {
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  width: 100%;
+  padding: 13px 18px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--small-card-bg);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.button-secondary:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.08);
+}
+
+.button-secondary:active {
+  opacity: 0.92;
+}
+
+/* ---------- DROPZONE ---------- */
+
+.sylva-dropzone {
+  margin-top: 10px;
+  border: 2px dashed var(--scrollbar-thumb);
+  border-radius: 18px;
+  padding: 20px 14px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.sylva-dropzone:hover,
+.sylva-dropzone.drag-over {
+  border-color: var(--primary);
+  background: rgba(23,101,60,0.05);
+}
+
+.sylva-dropzone strong {
+  color: var(--text);
+}
+
+/* ---------- STATUS ---------- */
+
+.sylva-status {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+
+.sylva-status:empty {
+  display: none;
+}
+
+.sylva-status.success {
+  background: rgba(46,139,91,0.12);
+  color: var(--text);
+}
+
+.sylva-status.error {
+  background: rgba(255,59,48,0.10);
+  color: var(--text);
+}
+
+/* ---------- MODAL ---------- */
+
+.sylva-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+
+/* Höhere Spezifität als .hidden aus style.css,
+   damit das Modal wirklich geschlossen bleibt */
+.sylva-modal-overlay.hidden {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .sylva-modal-overlay {
+    align-items: center;
+  }
+}
+
+.sylva-modal {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  box-shadow: var(--shadow-hover);
+  backdrop-filter: blur(18px);
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 120px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text);
+}
+
+.sylva-modal header {
+  padding: 20px 22px 0;
+}
+
+.sylva-modal header h3 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+}
+
+.sylva-modal .sylva-modal-summary {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sylva-modal-body {
+  padding: 14px 22px;
+  overflow-y: auto;
+}
+
+.sylva-modal footer {
+  padding: 14px 22px 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.sylva-modal footer .button,
+.sylva-modal footer .button-secondary {
+  margin: 0;
+}
+
+/* ---------- VORSCHAU-ITEMS ---------- */
+
+.sylva-preview-item {
+  background: var(--small-card-bg);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.sylva-preview-item .sylva-preview-title {
+  font-weight: 700;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.sylva-preview-item .sylva-preview-meta {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.sylva-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-left: 8px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.sylva-badge.new {
+  background: rgba(46,139,91,0.15);
+  color: var(--primary);
+}
+
+.sylva-badge.dup {
+  background: rgba(255,149,0,0.16);
+  color: #b26a00;
+}
+
+html[data-theme="dark"] .sylva-badge.dup {
+  color: #e8a33d;
+}
+
+.sylva-badge.err {
+  background: rgba(255,59,48,0.14);
+  color: #c0392b;
+}
+
+html[data-theme="dark"] .sylva-badge.err {
+  color: #e88a80;
+}
+
+.sylva-preview-error {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #c0392b;
+  line-height: 1.5;
+}
+
+html[data-theme="dark"] .sylva-preview-error {
+  color: #e88a80;
+}
+
+.sylva-preview-warning {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sylva-preview-action {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.sylva-preview-action select {
+  flex: 1;
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  outline: none;
+}
+
+/* ---------- BACKUP-VORSCHAU ---------- */
+
+#importBackupDetails:empty {
+  display: none;
+}
+
+.sylva-backup-card {
+  background: var(--small-card-bg);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-top: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.sylva-backup-title {
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.sylva-backup-heading {
+  font-weight: 800;
+  font-size: 13px;
+  margin: 12px 0 6px;
+}
+
+.sylva-backup-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.sylva-backup-key {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.sylva-backup-value {
+  color: var(--text);
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.sylva-backup-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--card-border);
+}
+
+.sylva-backup-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--avatar-bg);
+}
+
+.sylva-backup-who {
+  min-width: 0;
+}
+
+.sylva-backup-name {
+  font-weight: 800;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.sylva-backup-sub {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.sylva-checkline {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.sylva-checkline input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  accent-color: var(--primary);
+  padding: 0;
+  border: none;
+  background: transparent;
+}

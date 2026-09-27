@@ -15,6 +15,9 @@
 
   <!-- CSS FIX -->
   <link rel="stylesheet" href="../home/frontend/style.css">
+
+  <!-- DATENVERWALTUNG (Export-Button) -->
+  <link rel="stylesheet" href="../data/import-export/import-export.css">
 </head>
 
 <body>
@@ -140,8 +143,15 @@
 
   <!-- SAVE -->
   <button
+    class="button-secondary"
+    onclick="exportCurrentSet()"
+    style="margin-top: 20px;">
+    📤 Lernset exportieren (.md)
+  </button>
+
+  <button
     class="button"
-    style="margin-top: 30px;"
+    style="margin-top: 10px;"
     onclick="saveAll(); switchPage()">
     Speichern
   </button>
@@ -159,6 +169,9 @@
 <!-- EDITOR LOGIC -->
 <script src="../shared/name-filter.js" defer></script>
 <script src="../home/frontend/countingTime.js" defer></script>
+<script src="../data/import-export/migrations.js" defer></script>
+<script src="../data/import-export/markdown.js" defer></script>
+<script src="../data/import-export/exporter.js" defer></script>
 <script src="./editor.js" defer></script>
 
 </body>

@@ -138,6 +138,28 @@ function switchPage(){
 }
 
 // ===============================
+// EXPORT (aktuelles Lernset als Markdown)
+// Nutzt Code/data/import-export/exporter.js –
+// ohne eigene Datenhaltung.
+// ===============================
+function exportCurrentSet() {
+  if (!currentSetName) return;
+
+  try {
+    if (!window.SylvaExporter) return;
+
+    const res = window.SylvaExporter.exportLearnsets([currentSetName]);
+
+    if (!res.ok) {
+      alert(res.error || "Export fehlgeschlagen.");
+    }
+  } catch (e) {
+    console.error("SylvaLearn: Export fehlgeschlagen:", e);
+    alert("Export fehlgeschlagen.");
+  }
+}
+
+// ===============================
 // Event Input Changes
 // ===============================
 

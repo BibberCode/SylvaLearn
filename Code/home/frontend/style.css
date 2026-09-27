@@ -49,6 +49,11 @@
   --body-grad2: rgba(46,139,91,0.08);
   --loading-bg: #ffffff;
   --loading-loader: #2e8b5b;
+  --confidence-bg: rgba(255,255,255,0.72);
+  --confidence-bg-hover: rgba(244,250,246,1);
+  --confidence-border: rgba(225,232,227,0.9);
+  --confidence-border-hover: rgba(23,101,60,0.18);
+  --confidence-shadow-hover: 0 8px 20px rgba(0,0,0,0.06);
 
   color-scheme: light;
 }
@@ -93,6 +98,11 @@ html[data-theme="dark"] {
   --body-grad2: rgba(23,101,60,0.09);
   --loading-bg: #0e1a14;
   --loading-loader: #3aa76e;
+  --confidence-bg: rgba(255,255,255,0.04);
+  --confidence-bg-hover: rgba(70,180,120,0.12);
+  --confidence-border: rgba(255,255,255,0.09);
+  --confidence-border-hover: rgba(70,180,120,0.38);
+  --confidence-shadow-hover: 0 8px 20px rgba(0,0,0,0.35);
 
   color-scheme: dark;
 }
@@ -131,6 +141,11 @@ html[data-theme="dark"] {
     --body-grad2: rgba(23,101,60,0.09);
     --loading-bg: #0e1a14;
     --loading-loader: #3aa76e;
+    --confidence-bg: rgba(255,255,255,0.04);
+    --confidence-bg-hover: rgba(70,180,120,0.12);
+    --confidence-border: rgba(255,255,255,0.09);
+    --confidence-border-hover: rgba(70,180,120,0.38);
+    --confidence-shadow-hover: 0 8px 20px rgba(0,0,0,0.35);
     color-scheme: dark;
   }
 }
@@ -769,26 +784,43 @@ input:focus {
   min-height: 82px;
 
   flex-direction: column;
+  gap: 4px;
 
-  background: rgba(255,255,255,0.72);
+  text-align: center;
+  line-height: 1.3;
+
+  background: var(--confidence-bg);
 
   color: var(--text);
 
   border:
     1px solid
-    rgba(225,232,227,0.9);
+    var(--confidence-border);
 
   box-shadow: none;
+  backdrop-filter: blur(8px);
 }
 
 .confidence-buttons .button:hover {
-  background: rgba(244,250,246,1);
+  background: var(--confidence-bg-hover);
 
   border-color:
-    rgba(23,101,60,0.18);
+    var(--confidence-border-hover);
 
   box-shadow:
-    0 8px 20px rgba(0,0,0,0.06);
+    var(--confidence-shadow-hover);
+
+  transform: translateY(-1px);
+}
+
+.confidence-buttons .button:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
+.confidence-buttons .button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* =========================
