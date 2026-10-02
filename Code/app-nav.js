@@ -174,7 +174,7 @@ class AppNav extends HTMLElement {
       activeButton = buttons[2];
       activeIndex = 2;
     }
-    if (!activeButton && currentPath.startsWith("/Code/profile/feedback.html/")) {
+    if (!activeButton && currentPath.startsWith("/Code/profile/feedback.html")) {
       activeButton = buttons[5];
       activeIndex = 5;
     }
