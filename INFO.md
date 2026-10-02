@@ -8,7 +8,7 @@ Single Source of Truth ist die Datei `VERSION` (z. B. `v1.1.0 beta`).
 Das Script `scripts/bump-version.mjs` verteilt sie automatisch nach:
 
 - `index.html` → `<meta name="version" content="…">`
-- `Code/profile/feedback.html` → Tag mit `id="appVersion"` (`Version: …`)
+- `Code/profile/feedback/feedback.html` → Tag mit `id="appVersion"` (`Version: …`)
 
 Befehle (Node 20+, keine Dependencies nötig):
 

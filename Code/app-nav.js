@@ -174,9 +174,9 @@ class AppNav extends HTMLElement {
       activeButton = buttons[2];
       activeIndex = 2;
     }
-    if (!activeButton && currentPath.startsWith("/Code/profile/feedback.html")) {
-      activeButton = buttons[5];
-      activeIndex = 5;
+    if (!activeButton && currentPath.startsWith("/Code/profile/")) {
+      activeButton = buttons[4];
+      activeIndex = 4;
     }
     // Letzte Prüfung für Home auf GitHub Pages ("/SylvaLearn/" -> "/")
     if (!activeButton) {

@@ -2,9 +2,9 @@
 /* =========================
    SYLVALEARN – VERSION BUMP
    Single Source of Truth: VERSION (z.B. "v1.0.8 beta")
-   Schreibt die Version in:
-     - index.html  (<meta name="version" content="…">)
-     - Code/profile/feedback.html  (Version: …)
+    Schreibt die Version in:
+      - index.html  (<meta name="version" content="…">)
+      - Code/profile/feedback/feedback.html  (Version: …)
 
    Nutzung:
      node scripts/bump-version.mjs [major|minor|patch]  (Default: patch)
@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const VERSION_FILE = join(ROOT, "VERSION");
 const INDEX_FILE = join(ROOT, "index.html");
-const FEEDBACK_FILE = join(ROOT, "Code", "profile", "feedback.html");
+const FEEDBACK_FILE = join(ROOT, "Code", "profile", "feedback", "feedback.html");
 
 function parse(version) {
   const m = version.trim().match(/^(v)?(\d+)\.(\d+)\.(\d+)(.*)$/);
