@@ -86,6 +86,9 @@ Notes:
 * Tests: `node scripts/test-import-export.mjs`
   (roundtrips `learnset → markdown → learnset` and
   `backup → JSON → backup` plus all documented error cases).
+* Authoring template for AI-generated learn sets:
+  [`docs/SYLVA_LERNSET_SCHEMA.md`](docs/SYLVA_LERNSET_SCHEMA.md)
+  (exact Markdown rules, field reference, template and self-check list).
 
 ---
 
