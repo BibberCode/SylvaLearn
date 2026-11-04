@@ -287,13 +287,29 @@ document.querySelectorAll("[data-level]").forEach(btn => {
 
     if (!currentCard) return;
 
-    if (currentMode === "smart") {
-      setConfidenceSmart(level, currentCard, cardReverse);
+    const levelButtons = document.querySelectorAll("[data-level]");
+    levelButtons.forEach(b => { b.disabled = true; });
+
+    let failed = false;
+
+    try {
+      if (currentMode === "smart") {
+        // Wichtig: awaiten, damit die Karte/Statistik erst nach der
+        // Prüfung weitergeschaltet wird.
+        await setConfidenceSmart(level, currentCard, cardReverse);
+      }
+
+      if (currentMode === "strict") {
+        await setConfidenceStrict(level, currentCard, cardReverse);
+      }
+    } catch (err) {
+      failed = true;
+      console.error("Antwortprüfung fehlgeschlagen:", err);
+    } finally {
+      levelButtons.forEach(b => { b.disabled = false; });
     }
 
-    if (currentMode === "strict") {
-      await setConfidenceStrict(level, currentCard, cardReverse);
-    }
+    if (failed) return;
 
     const confidenceBox = document.getElementById("confidenceBox");
     if (confidenceBox) confidenceBox.style.display = "none";

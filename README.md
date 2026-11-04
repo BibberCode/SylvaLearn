@@ -15,7 +15,7 @@ This is my first Progressive Web App (PWA), so bugs or unexpected behavior may s
 ## 🎯 Features
 
 * 📚 Flashcard-based learning system
-* 🧠 Smart Mode (AI-based answer comparison)
+* 🧠 Smart Mode (AI-based answer comparison, tolerates typos and free paraphrases)
 * ⚡ Strict Mode (exact answer matching)
 * 🔍 Self-Compare (semantic similarity evaluation)
 * 📊 Progress tracking per learning set
@@ -109,7 +109,7 @@ Notes:
 * JavaScript (Vanilla)
 * ES Modules
 * localStorage
-* Transformers.js (optional AI feature)
+* Transformers.js (optional multilingual AI answer comparison)
 
 ---
 

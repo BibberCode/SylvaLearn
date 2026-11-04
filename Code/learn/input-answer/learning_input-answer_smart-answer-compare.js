@@ -1,183 +1,175 @@
 import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers";
 
-let extractor = null;
-let aiReady = false;
+import {
+  analyzeLexical,
+  decide,
+  normalizeForEmbedding,
+} from "./smart-compare-core.js";
 
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
 import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
 
+/* =========================
+   SYLVALEARN – SMART ANSWER COMPARE
+   - toleriert kleine Rechtschreibfehler (fuzzy Token-Matching)
+   - akzeptiert freie Formulierungen/Paraphrasen (multilinguale Embeddings)
+   - erkennt klare Widersprüche (Verneinung, Zahlen, Einheiten)
+   ========================= */
+
+// Multilinguales Paraphrase-Modell: für Deutsch deutlich besser
+// als das bisherige englische all-MiniLM-L6-v2.
+const MODEL_ID = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
+const MODEL_OPTIONS = { quantized: true };
+
+const EMBEDDING_CACHE_LIMIT = 300;
+
+let extractor = null;
+let aiReady = false;
+let initPromise = null;
+
+const embeddingCache = new Map();
+
 /* ---------------- INIT ---------------- */
 
-export async function init() {
+export function init() {
+  if (initPromise) return initPromise;
 
-  if (aiReady) return;
+  initPromise = (async () => {
+    try {
+      extractor = await pipeline(
+        "feature-extraction",
+        MODEL_ID,
+        MODEL_OPTIONS
+      );
 
-  try {
-    extractor = await pipeline(
-      "feature-extraction",
-      "Xenova/all-MiniLM-L6-v2"
-    );
+      aiReady = true;
 
-    aiReady = true;
-
-  } catch (err) {
-    console.error("AI Init Fehler:", err);
-    aiReady = false;
-  }
-}
-
-/* ---------------- NORMALIZE ---------------- */
-
-function normalizeText(str) {
-  return (str || "")
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Umlaute
-    .replace(/[^a-z0-9\s]/gi, " ")    // alles außer Buchstaben/Zahlen
-    .replace(/\s+/g, " ")             // doppelte Leerzeichen
-    .trim();
-}
-
-/* ---------------- LEVENSHTEIN (Rechtschreibung) ---------------- */
-
-function levenshtein(a, b) {
-  const matrix = Array.from({ length: b.length + 1 }, () => []);
-
-  for (let i = 0; i <= b.length; i++) matrix[i][0] = i;
-  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      matrix[i][j] =
-        b[i - 1] === a[j - 1]
-          ? matrix[i - 1][j - 1]
-          : Math.min(
-              matrix[i - 1][j - 1] + 1,
-              matrix[i][j - 1] + 1,
-              matrix[i - 1][j] + 1
-            );
+      // Warm-up: der erste echte Vergleich soll nicht die Initialisierung zahlen.
+      await extractor("test", { pooling: "mean", normalize: true });
+    } catch (err) {
+      console.error("AI Init Fehler:", err);
+      aiReady = false;
+      extractor = null;
     }
+  })();
+
+  return initPromise;
+}
+
+async function ensureModel() {
+  if (aiReady) return true;
+  await init();
+  return aiReady;
+}
+
+/* ---------------- EMBEDDINGS ---------------- */
+
+async function embed(text) {
+  if (embeddingCache.has(text)) {
+    return embeddingCache.get(text);
   }
 
-  return matrix[b.length][a.length];
-}
+  const output = await extractor(text, {
+    pooling: "mean",
+    normalize: true,
+  });
 
-function spellingSimilarity(a, b) {
-  const dist = levenshtein(a, b);
-  const max = Math.max(a.length, b.length);
-  return max === 0 ? 1 : 1 - dist / max;
-}
+  const vector = output.data;
 
-/* ---------------- TOKEN CHECK ---------------- */
-
-function tokenSimilarity(user, correct) {
-
-  const u = user.split(" ");
-  const c = correct.split(" ");
-
-  let matches = 0;
-
-  for (const w of u) {
-    if (c.includes(w)) matches++;
+  if (embeddingCache.size >= EMBEDDING_CACHE_LIMIT) {
+    const oldest = embeddingCache.keys().next().value;
+    embeddingCache.delete(oldest);
   }
 
-  return matches / Math.max(c.length, 1);
+  embeddingCache.set(text, vector);
+  return vector;
 }
-
-/* ---------------- COSINE ---------------- */
 
 function cosineSimilarity(a, b) {
-
   let dot = 0;
   let normA = 0;
   let normB = 0;
 
-  for (let i = 0; i < a.length; i++) {
+  const len = Math.min(a.length, b.length);
+
+  for (let i = 0; i < len; i++) {
     dot += a[i] * b[i];
     normA += a[i] * a[i];
     normB += b[i] * b[i];
   }
 
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+  const denom = Math.sqrt(normA) * Math.sqrt(normB);
+  return denom === 0 ? 0 : dot / denom;
 }
 
-/* ---------------- COMPARE ---------------- */
+// Das Modell ist case-sensitiv. Wir prüfen deshalb die Original-
+// schreibweise und zusätzlich die Kleinschreibung und nehmen den
+// besten Treffer. So funktionieren sowohl "Computer" als auch
+// "computer" als Antwort auf "Rechner".
+function caseVariants(text) {
+  const lower = text.toLocaleLowerCase("de-DE");
+  return lower === text ? [text] : [text, lower];
+}
 
-async function compareAnswer(userAnswer, currentCard, reverse) {
+/* ---------------- VERGLEICH ---------------- */
 
-  if (!currentCard) return false;
+async function gradeAnswer(userAnswer, correctAnswer) {
+  const analysis = analyzeLexical(userAnswer, correctAnswer);
 
-  const correctAnswer = reverse
-    ? currentCard.frage
-    : currentCard.antwort;
+  let semantic = 0;
+  let semanticAvailable = false;
 
-  const userText = normalizeText(userAnswer);
-  const correctText = normalizeText(correctAnswer);
+  if (!analysis.exact && await ensureModel()) {
+    try {
+      const userText = normalizeForEmbedding(userAnswer);
+      const correctText = normalizeForEmbedding(correctAnswer);
 
-  if (!userText) return false;
+      if (userText && correctText) {
+        const userVariants = caseVariants(userText);
+        const correctVariants = caseVariants(correctText);
 
-  /* ---------- EXAKT ---------- */
-  if (userText === correctText) return true;
+        const [userVectors, correctVectors] = await Promise.all([
+          Promise.all(userVariants.map(embed)),
+          Promise.all(correctVariants.map(embed)),
+        ]);
 
-  /* ---------- LEVENSHTEIN (Rechtschreibfehler) ---------- */
-  const spelling = spellingSimilarity(userText, correctText);
-  if (spelling > 0.9) return true;
+        for (const u of userVectors) {
+          for (const c of correctVectors) {
+            semantic = Math.max(
+              semantic,
+              cosineSimilarity(u, c)
+            );
+          }
+        }
 
-  /* ---------- TOKEN ---------- */
-  const tokenScore = tokenSimilarity(userText, correctText);
-  if (tokenScore >= 0.8) return true;
-
-  /* ---------- TEILMATCH ---------- */
-  if (correctText.includes(userText) && userText.length > 4) {
-    return true;
+        semanticAvailable = true;
+      }
+    } catch (err) {
+      console.error("Smart-Vergleich fehlgeschlagen:", err);
+    }
   }
 
-  /* ---------- FALLBACK OHNE KI ---------- */
-  if (!aiReady || !extractor) {
-    return tokenScore >= 0.6;
-  }
+  const result = decide(analysis, semantic, semanticAvailable);
 
-  try {
+  console.debug("SylvaLearn Smart:", {
+    correct: result.correct,
+    reason: result.reason,
+    score: Number((result.score ?? 0).toFixed(3)),
+    semantic: semanticAvailable ? Number(semantic.toFixed(3)) : null,
+    fuzzy: Number(analysis.fuzzy.toFixed(3)),
+    char: Number(analysis.char.toFixed(3)),
+    penalty: analysis.penalty,
+    negation: analysis.negationMismatch,
+    number: analysis.numberMismatch,
+    unit: analysis.unitMismatch,
+  });
 
-    const [uVec, cVec] = await Promise.all([
-      extractor(userText, { pooling: "mean", normalize: true }),
-      extractor(correctText, { pooling: "mean", normalize: true })
-    ]);
-
-    if (!uVec?.data || !cVec?.data) return false;
-
-    const similarity = cosineSimilarity(uVec.data, cVec.data);
-
-    /* ---------- KOMBINIERTER SCORE ---------- */
-
-    const finalScore =
-      similarity * 0.6 +
-      tokenScore * 0.2 +
-      spelling * 0.2;
-
-    /* ---------- DYNAMISCHER THRESHOLD ---------- */
-
-    let threshold = 0.72;
-
-    if (correctText.length < 10) threshold = 0.9;
-    else if (correctText.length < 20) threshold = 0.84;
-    else if (correctText.length > 80) threshold = 0.65;
-
-    return finalScore >= threshold;
-
-  } catch (err) {
-
-    console.error("Compare Fehler:", err);
-
-    return tokenScore >= 0.6;
-  }
+  return { ...result, analysis };
 }
 
 /* ---------------- CONFIDENCE ---------------- */
 
 export async function setConfidenceSmart(level, currentCard, reverse) {
-
   if (!currentCard) return;
 
   const input = document.getElementById("userAnswer");
@@ -187,30 +179,40 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
 
   const userAnswer = input.value;
 
-  const isCorrect = await compareAnswer(
-    userAnswer,
-    currentCard,
-    reverse
-  );
-
-  evalBox.style.display = "block";
-
   const correctAnswer = reverse
     ? currentCard.frage
     : currentCard.antwort;
+
+  evalBox.style.display = "block";
+  evalBox.style.color = "";
+  evalBox.textContent = aiReady
+    ? "Prüfe Antwort…"
+    : "Smart-Modus lädt Sprachmodell (einmalig)…";
+
+  const result = await gradeAnswer(userAnswer, correctAnswer);
+  const isCorrect = result.correct;
 
   evalBox.textContent = isCorrect
     ? "Richtig! Antwort: " + correctAnswer
     : "Falsch! Richtige Antwort: " + correctAnswer;
 
+  if (!semanticAvailableFor(result)) {
+    evalBox.textContent += " (Sprachmodell nicht verfügbar – nur Rechtschreibtoleranz)";
+  }
+
   evalBox.style.color = isCorrect ? "green" : "red";
 
-  if (isCorrect) { rightAnswerAll(); rightAnswerAlone(); } else { wrongAnswerAll(); wrongAnswerAlone(); }
+  if (isCorrect) {
+    rightAnswerAll();
+    rightAnswerAlone();
+  } else {
+    wrongAnswerAll();
+    wrongAnswerAlone();
+  }
 
   const name = localStorage.getItem("currentSetName");
 
   let learnsets = [];
-
   try {
     learnsets = JSON.parse(localStorage.getItem("learnsets")) || [];
   } catch {
@@ -243,4 +245,9 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
     "learnsets",
     JSON.stringify(learnsets)
   );
+}
+
+function semanticAvailableFor(result) {
+  // Exakte Treffer brauchen kein Modell und sollen keine Warnung zeigen.
+  return result.analysis?.exact || result.semanticAvailable;
 }

@@ -54,6 +54,9 @@
   --confidence-border: rgba(225,232,227,0.9);
   --confidence-border-hover: rgba(23,101,60,0.18);
   --confidence-shadow-hover: 0 8px 20px rgba(0,0,0,0.06);
+  --evaluation-bg: rgba(244,248,245,0.9);
+  --evaluation-border: rgba(218,228,221,0.9);
+  --evaluation-text: #3f4f46;
 
   color-scheme: light;
 }
@@ -103,6 +106,9 @@ html[data-theme="dark"] {
   --confidence-border: rgba(255,255,255,0.09);
   --confidence-border-hover: rgba(70,180,120,0.38);
   --confidence-shadow-hover: 0 8px 20px rgba(0,0,0,0.35);
+  --evaluation-bg: rgba(255,255,255,0.05);
+  --evaluation-border: rgba(255,255,255,0.09);
+  --evaluation-text: #dfe9e2;
 
   color-scheme: dark;
 }
@@ -146,6 +152,9 @@ html[data-theme="dark"] {
     --confidence-border: rgba(255,255,255,0.09);
     --confidence-border-hover: rgba(70,180,120,0.38);
     --confidence-shadow-hover: 0 8px 20px rgba(0,0,0,0.35);
+    --evaluation-bg: rgba(255,255,255,0.05);
+    --evaluation-border: rgba(255,255,255,0.09);
+    --evaluation-text: #dfe9e2;
     color-scheme: dark;
   }
 }
@@ -745,17 +754,16 @@ input:focus {
 
   border-radius: 18px;
 
-  background:
-    rgba(244,248,245,0.9);
+  background: var(--evaluation-bg);
 
   border:
     1px solid
-    rgba(218,228,221,0.9);
+    var(--evaluation-border);
 
   font-size: 14px;
   line-height: 1.5;
 
-  color: #3f4f46;
+  color: var(--evaluation-text);
 
   backdrop-filter: blur(8px);
 }
