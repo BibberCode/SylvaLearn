@@ -1,3 +1,5 @@
+import { splitAlternatives } from "./smart-compare-core.js";
+
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
 import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
 
@@ -15,7 +17,10 @@ async function compareAnswer(userAnswer, currentCard, reverse) {
   userAnswer = (userAnswer || "").trim().replace(/\s+/g, " ");
   const correct = (correctAnswer || "").trim().replace(/\s+/g, " ");
 
-  const isCorrect = userAnswer === correct;
+  // Kurze Alternativantworten ("unsicher, ungewiss") auch im
+  // strengen Modus exakt akzeptieren.
+  const candidates = [correct, ...splitAlternatives(correct)];
+  const isCorrect = candidates.some(candidate => userAnswer === candidate);
 
   if (isCorrect) {
     evalBox.textContent = "Richtig! Antwort: " + correctAnswer;

@@ -1,4 +1,4 @@
-const CACHE_NAME = "lernapp-v1";
+const CACHE_NAME = "lernapp-v2";
 
 const urlsToCache = [
   "/",
@@ -12,6 +12,7 @@ self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -26,16 +27,30 @@ self.addEventListener("activate", event => {
           }
         })
       )
-    )
+    ).then(() => self.clients.claim())
   );
 });
 
-// Fetch (offline fallback)
+// Fetch: Netzwerk zuerst, Cache als Offline-Fallback.
+// So kommen CSS-/JS-Änderungen sofort an, statt dauerhaft aus dem Cache zu kommen.
 self.addEventListener("fetch", event => {
+  const { request } = event;
+
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
-    caches.match(event.request)
+    fetch(request)
       .then(response => {
-        return response || fetch(event.request);
+        if (response && response.status === 200 && response.type === "basic") {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        }
+
+        return response;
       })
+      .catch(() => caches.match(request))
   );
 });

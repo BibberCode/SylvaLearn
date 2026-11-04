@@ -4,6 +4,7 @@ import {
   analyzeLexical,
   decide,
   normalizeForEmbedding,
+  splitAlternatives,
 } from "./smart-compare-core.js";
 
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
@@ -113,7 +114,7 @@ function caseVariants(text) {
 
 /* ---------------- VERGLEICH ---------------- */
 
-async function gradeAnswer(userAnswer, correctAnswer) {
+async function gradeAgainst(userAnswer, correctAnswer) {
   const analysis = analyzeLexical(userAnswer, correctAnswer);
 
   let semantic = 0;
@@ -150,21 +151,56 @@ async function gradeAnswer(userAnswer, correctAnswer) {
   }
 
   const result = decide(analysis, semantic, semanticAvailable);
+  return { ...result, analysis };
+}
+
+async function gradeAnswer(userAnswer, correctAnswer) {
+  // "unsicher, ungewiss" bedeutet: eine der beiden Antworten reicht.
+  // Zuerst die vollständige Musterantwort prüfen, danach die einzelnen
+  // Alternativen. Der beste Treffer gewinnt.
+  const candidates = [
+    correctAnswer,
+    ...splitAlternatives(correctAnswer),
+  ];
+
+  let best = null;
+
+  for (const candidate of candidates) {
+    const result = await gradeAgainst(userAnswer, candidate);
+    result.candidate = candidate;
+
+    if (!best) {
+      best = result;
+    } else if (result.correct && !best.correct) {
+      best = result;
+    } else if (
+      result.correct === best.correct &&
+      result.score > best.score
+    ) {
+      best = result;
+    }
+
+    if (result.correct) break;
+  }
 
   console.debug("SylvaLearn Smart:", {
-    correct: result.correct,
-    reason: result.reason,
-    score: Number((result.score ?? 0).toFixed(3)),
-    semantic: semanticAvailable ? Number(semantic.toFixed(3)) : null,
-    fuzzy: Number(analysis.fuzzy.toFixed(3)),
-    char: Number(analysis.char.toFixed(3)),
-    penalty: analysis.penalty,
-    negation: analysis.negationMismatch,
-    number: analysis.numberMismatch,
-    unit: analysis.unitMismatch,
+    correct: best.correct,
+    reason: best.reason,
+    candidate: best.candidate,
+    alternatives: candidates.length,
+    score: Number((best.score ?? 0).toFixed(3)),
+    semantic: best.semanticAvailable
+      ? Number(best.semantic.toFixed(3))
+      : null,
+    fuzzy: Number(best.analysis.fuzzy.toFixed(3)),
+    char: Number(best.analysis.char.toFixed(3)),
+    penalty: best.analysis.penalty,
+    negation: best.analysis.negationMismatch,
+    number: best.analysis.numberMismatch,
+    unit: best.analysis.unitMismatch,
   });
 
-  return { ...result, analysis };
+  return best;
 }
 
 /* ---------------- CONFIDENCE ---------------- */

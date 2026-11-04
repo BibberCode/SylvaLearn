@@ -202,6 +202,30 @@ export function tokenize(value) {
   return value.split(" ").filter(Boolean);
 }
 
+// Kurze, kommagetrennte Antworten wie "unsicher, ungewiss" sind
+// Alternativantworten. Lange Sätze und Aufzählungen mit "und"
+// werden bewusst nicht aufgeteilt, damit z. B.
+// "Zellkern, Mitochondrien und Ribosomen" nicht als Einzelantwort
+// durchgeht.
+export function splitAlternatives(value) {
+  const text = String(value ?? "").trim();
+  if (!text) return [];
+
+  const parts = text
+    .split(/\s*(?:,|;|\/|\||\boder\b)\s*/i)
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  if (parts.length < 2 || parts.length > 6) return [];
+
+  for (const part of parts) {
+    if (tokenize(normalizeForMatch(part)).length > 4) return [];
+    if (/\bund\b/i.test(part)) return [];
+  }
+
+  return parts;
+}
+
 /* ---------------- TIPPFEHLER ---------------- */
 
 export function levenshtein(a, b) {
