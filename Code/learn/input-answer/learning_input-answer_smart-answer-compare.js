@@ -6,7 +6,7 @@ import {
   normalizeForEmbedding,
   normalizeForMatch,
   splitAlternatives,
-} from "./smart-compare-core.js?v=20261105b";
+} from "./smart-compare-core.js?v=20261105e";
 
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
 import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
@@ -53,6 +53,8 @@ export function init() {
       aiReady = false;
       extractor = null;
     }
+
+    return aiReady;
   })();
 
   return initPromise;
@@ -248,10 +250,6 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
     ? "Richtig! Antwort: " + correctAnswer
     : "Falsch! Richtige Antwort: " + correctAnswer;
 
-  if (!semanticAvailableFor(result)) {
-    evalBox.textContent += " (Sprachmodell nicht verfügbar – nur Rechtschreibtoleranz)";
-  }
-
   evalBox.style.color = isCorrect ? "green" : "red";
 
   if (isCorrect) {
@@ -297,9 +295,4 @@ export async function setConfidenceSmart(level, currentCard, reverse) {
     "learnsets",
     JSON.stringify(learnsets)
   );
-}
-
-function semanticAvailableFor(result) {
-  // Exakte Treffer brauchen kein Modell und sollen keine Warnung zeigen.
-  return result.analysis?.exact || result.semanticAvailable;
 }

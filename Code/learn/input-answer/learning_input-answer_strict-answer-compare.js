@@ -1,5 +1,3 @@
-import { splitAlternatives } from "./smart-compare-core.js?v=20261105b";
-
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
 import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
 
@@ -17,10 +15,9 @@ async function compareAnswer(userAnswer, currentCard, reverse) {
   userAnswer = (userAnswer || "").trim().replace(/\s+/g, " ");
   const correct = (correctAnswer || "").trim().replace(/\s+/g, " ");
 
-  // Kurze Alternativantworten ("unsicher, ungewiss") auch im
-  // strengen Modus exakt akzeptieren.
-  const candidates = [correct, ...splitAlternatives(correct)];
-  const isCorrect = candidates.some(candidate => userAnswer === candidate);
+  // Strict-Modus: Die komplette Musterantwort muss 1:1 passen.
+  // Alternativen gelten nur im Smart-Modus.
+  const isCorrect = userAnswer === correct;
 
   if (isCorrect) {
     evalBox.textContent = "Richtig! Antwort: " + correctAnswer;

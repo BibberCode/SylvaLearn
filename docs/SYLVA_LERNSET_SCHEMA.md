@@ -105,7 +105,7 @@ Erlaubt, aber nur wenn ausdrücklich verlangt. Jedes Lernset beginnt erneut mit 
 - `self-compare` – Lernende vergleichen ihre Antwort selbst mit der Musterantwort (Default).
 - `input-answer` – Lernende tippen die Antwort, die App vergleicht sie (streng oder smart).
 
-**Alternative Antworten:** Eine kurze Antwort darf mehrere akzeptierte Varianten enthalten, getrennt durch Komma, Semikolon, Schrägstrich, „oder“, „bzw.“ oder eine neue Zeile, z. B. `unsicher, ungewiss`. Jede Variante muss höchstens 4 Wörter lang sein; der Smart-Modus akzeptiert dann jede Variante einzeln (auch mit Tippfehlern oder als Paraphrase), der Strict-Modus akzeptiert die exakte Schreibweise einer Variante. Aufzählungen, die gemeinsam die Antwort bilden, mit `und` schreiben (z. B. `Zellkern, Mitochondrien und Ribosomen`) – sie werden nicht als Alternativen aufgeteilt. Lange Sätze werden ebenfalls nicht aufgeteilt.
+**Alternative Antworten:** Eine kurze Antwort darf mehrere akzeptierte Varianten enthalten, getrennt durch Komma, Semikolon, Schrägstrich, „oder“, „bzw.“ oder eine neue Zeile, z. B. `unsicher, ungewiss`. Jede Variante muss höchstens 4 Wörter lang sein; der Smart-Modus akzeptiert dann jede Variante einzeln (auch mit Tippfehlern oder als Paraphrase). Der Strict-Modus verlangt weiterhin die komplette Musterantwort 1:1 und nutzt die Alternativen nicht. Aufzählungen, die gemeinsam die Antwort bilden, mit `und` schreiben (z. B. `Zellkern, Mitochondrien und Ribosomen`) – sie werden nicht als Alternativen aufgeteilt. Lange Sätze werden ebenfalls nicht aufgeteilt.
 
 **Titel-Länge:** SylvaLearn misst mit JavaScript `.length` (UTF-16). Emoji und einige Sonderzeichen zählen doppelt. Sicherheitshalber **maximal 36 sichtbare Zeichen** verwenden.
 

@@ -9,13 +9,16 @@ let cardReverse = reverse;
 
 /* ---------------- IMPORTS ---------------- */
 
-import { setConfidenceSmart } from "./learning_input-answer_smart-answer-compare.js?v=20261105b";
-import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js?v=20261105b";
+import {
+  setConfidenceSmart,
+  init as initSmart,
+} from "./learning_input-answer_smart-answer-compare.js?v=20261105e";
+import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js?v=20261105e";
 
 // Versions-Query bei allen eigenen Modulen: so liefert der Browser
 // nach einem Update garantiert die neue Datei und nicht die alte
 // HTTP-Cache-Version.
-const MODULE_VERSION = "20261105b";
+const MODULE_VERSION = "20261105e";
 
 /* ---------------- MODE SWITCH ---------------- */
 
@@ -42,6 +45,34 @@ async function setMode(mode) {
     ?.classList.toggle("active", currentMode === "strict");
 
   currentModule?.init?.();
+}
+
+function warmUpSmartModel() {
+  const smartBtn = document.getElementById("smartBtn");
+  if (!smartBtn) return;
+
+  // Datensparmodus respektieren; beim Klick auf Smart wird trotzdem
+  // geladen, nur eben nicht schon im Hintergrund.
+  if (navigator.connection?.saveData) return;
+
+  const start = () => {
+    initSmart()
+      .then(ready => {
+        smartBtn.dataset.modelReady = ready ? "true" : "false";
+      })
+      .catch(() => {
+        smartBtn.dataset.modelReady = "false";
+      });
+  };
+
+  // Nach dem ersten Rendern laden, damit die Karte sofort da ist.
+  // init() ist idempotent: ein späterer Klick startet keinen zweiten
+  // Download.
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(start, { timeout: 2000 });
+  } else {
+    setTimeout(start, 0);
+  }
 }
 
 /* ---------------- INIT ---------------- */
@@ -71,6 +102,10 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   nextCard();
   updateFinishedCardsBar();
+
+  // Smart-Modell schon im Hintergrund laden, auch wenn gerade Strict
+  // aktiv ist. So ist es beim Umschalten meistens bereits bereit.
+  warmUpSmartModel();
 });
 
 /* ---------------- NEXT CARD ---------------- */
