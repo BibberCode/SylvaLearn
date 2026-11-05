@@ -9,8 +9,13 @@ let cardReverse = reverse;
 
 /* ---------------- IMPORTS ---------------- */
 
-import { setConfidenceSmart } from "./learning_input-answer_smart-answer-compare.js";
-import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js";
+import { setConfidenceSmart } from "./learning_input-answer_smart-answer-compare.js?v=20261105b";
+import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js?v=20261105b";
+
+// Versions-Query bei allen eigenen Modulen: so liefert der Browser
+// nach einem Update garantiert die neue Datei und nicht die alte
+// HTTP-Cache-Version.
+const MODULE_VERSION = "20261105b";
 
 /* ---------------- MODE SWITCH ---------------- */
 
@@ -19,11 +24,15 @@ async function setMode(mode) {
   localStorage.setItem("mode", currentMode);
 
   if (currentMode === "smart") {
-    currentModule = await import("./learning_input-answer_smart-answer-compare.js");
+    currentModule = await import(
+      `./learning_input-answer_smart-answer-compare.js?v=${MODULE_VERSION}`
+    );
   }
 
   if (currentMode === "strict") {
-    currentModule = await import("./learning_input-answer_strict-answer-compare.js");
+    currentModule = await import(
+      `./learning_input-answer_strict-answer-compare.js?v=${MODULE_VERSION}`
+    );
   }
 
   document.getElementById("smartBtn")

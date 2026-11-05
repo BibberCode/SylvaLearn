@@ -1,10 +1,13 @@
-const CACHE_NAME = "lernapp-v2";
+const CACHE_NAME = "lernapp-v4";
 
+// Relative URLs werden gegen den Ablageort von sw.js aufgelöst.
+// Dadurch funktioniert der Cache auch, wenn die App in einem
+// Unterordner (z. B. GitHub Pages) liegt.
 const urlsToCache = [
-  "/",
-  "/index.html",
-  "/Code/home/frontend/style.css",
-  "/app.js"
+  "./",
+  "./index.html",
+  "./Code/home/frontend/style.css",
+  "./app.js"
 ];
 
 // Installieren (Dateien speichern)
@@ -42,7 +45,9 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    fetch(request)
+    // "no-store" verhindert, dass der Browser trotz Netzwerk-first
+    // noch eine alte JS-/HTML-Version aus dem HTTP-Cache liefert.
+    fetch(request, { cache: "no-store" })
       .then(response => {
         if (response && response.status === 200 && response.type === "basic") {
           const copy = response.clone();

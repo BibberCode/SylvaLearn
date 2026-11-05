@@ -208,20 +208,63 @@ export function tokenize(value) {
 // "Zellkern, Mitochondrien und Ribosomen" nicht als Einzelantwort
 // durchgeht.
 export function splitAlternatives(value) {
-  const text = String(value ?? "").trim();
+  let text = String(value ?? "")
+    .normalize("NFC")
+    // Unsichtbare Zeichen (z. B. aus kopierten Texten) entfernen.
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .trim();
+
   if (!text) return [];
 
+  const hadSlash = /[/／]/.test(text);
+  const hadDash = /[–—]/.test(text);
+
+  // Schrägstriche als Trenner behandeln. Brüche ("1/2") und
+  // zusammengesetzte Einheiten ("km/h") werden unten wieder
+  // ausgeschlossen.
+  text = text.replace(/[/／]/g, ", ");
+
+  // Neben normalen Kommas auch typografische/vollbreite Trennzeichen
+  // akzeptieren. "und" bleibt bewusst ein Aufzählungszeichen.
   const parts = text
-    .split(/\s*(?:,|;|\/|\||\boder\b)\s*/i)
-    .map(part => part.trim())
+    .split(/\s*(?:[,;，；、|｜•·–—]|\b(?:oder|respektive|bzw)\b\.?|\n+)\s*/i)
+    .map(part => part.replace(/^[\s.,;:!?]+|[\s.,;:!?]+$/g, "").trim())
     .filter(Boolean);
 
   if (parts.length < 2 || parts.length > 6) return [];
 
-  for (const part of parts) {
-    if (tokenize(normalizeForMatch(part)).length > 4) return [];
-    if (/\bund\b/i.test(part)) return [];
+  const normalizedParts = parts.map(part => normalizeForMatch(part));
+
+  // "1/2" oder "1–2": Brüche/Bereiche, keine Alternativen.
+  if (
+    (hadSlash || hadDash) &&
+    normalizedParts.every(part => /^\d+$/.test(part))
+  ) return [];
+
+  // "km/h" ist eine zusammengesetzte Einheit, keine Alternative.
+  // Bei "m, cm" (Komma) bleibt die Alternativliste dagegen erhalten.
+  if (hadSlash && normalizedParts.every(part => {
+    const tokens = tokenize(part);
+    return tokens.length === 1 &&
+      Object.prototype.hasOwnProperty.call(UNIT_ALIASES, tokens[0]);
+  })) return [];
+
+  const tokenCounts = [];
+
+  for (let i = 0; i < parts.length; i++) {
+    const tokens = tokenize(normalizedParts[i]);
+
+    if (tokens.length === 0 || tokens.length > 4) return [];
+    if (/\bund\b/i.test(parts[i])) return [];
+
+    tokenCounts.push(tokens.length);
   }
+
+  // "Ja, das ist richtig" ist keine Alternativliste. Echte
+  // Synonymlisten haben meist ähnlich lange Teile.
+  const shortest = Math.min(...tokenCounts);
+  const longest = Math.max(...tokenCounts);
+  if (shortest === 0 || longest / shortest > 2) return [];
 
   return parts;
 }

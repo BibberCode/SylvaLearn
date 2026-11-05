@@ -4,8 +4,9 @@ import {
   analyzeLexical,
   decide,
   normalizeForEmbedding,
+  normalizeForMatch,
   splitAlternatives,
-} from "./smart-compare-core.js";
+} from "./smart-compare-core.js?v=20261105b";
 
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
 import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
@@ -165,22 +166,37 @@ async function gradeAnswer(userAnswer, correctAnswer) {
 
   let best = null;
 
-  for (const candidate of candidates) {
-    const result = await gradeAgainst(userAnswer, candidate);
-    result.candidate = candidate;
+  // Exakte Treffer auf eine Alternative sofort akzeptieren. Das
+  // funktioniert auch dann, wenn das Sprachmodell noch lädt oder
+  // gar nicht verfügbar ist.
+  const userText = normalizeForMatch(userAnswer);
+  const exactCandidate = userText
+    ? candidates.find(candidate => normalizeForMatch(candidate) === userText)
+    : null;
 
-    if (!best) {
-      best = result;
-    } else if (result.correct && !best.correct) {
-      best = result;
-    } else if (
-      result.correct === best.correct &&
-      result.score > best.score
-    ) {
-      best = result;
+  if (exactCandidate) {
+    best = {
+      ...(await gradeAgainst(userAnswer, exactCandidate)),
+      candidate: exactCandidate,
+    };
+  } else {
+    for (const candidate of candidates) {
+      const result = await gradeAgainst(userAnswer, candidate);
+      result.candidate = candidate;
+
+      if (!best) {
+        best = result;
+      } else if (result.correct && !best.correct) {
+        best = result;
+      } else if (
+        result.correct === best.correct &&
+        result.score > best.score
+      ) {
+        best = result;
+      }
+
+      if (result.correct) break;
     }
-
-    if (result.correct) break;
   }
 
   console.debug("SylvaLearn Smart:", {

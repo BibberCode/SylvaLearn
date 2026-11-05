@@ -1,4 +1,4 @@
-import { splitAlternatives } from "./smart-compare-core.js";
+import { splitAlternatives } from "./smart-compare-core.js?v=20261105b";
 
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
 import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";
