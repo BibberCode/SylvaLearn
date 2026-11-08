@@ -12,13 +12,13 @@ let cardReverse = reverse;
 import {
   setConfidenceSmart,
   init as initSmart,
-} from "./learning_input-answer_smart-answer-compare.js?v=20261105e";
-import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js?v=20261105e";
+} from "./learning_input-answer_smart-answer-compare.js?v=20261105f";
+import { setConfidenceStrict } from "./learning_input-answer_strict-answer-compare.js?v=20261105f";
 
 // Versions-Query bei allen eigenen Modulen: so liefert der Browser
 // nach einem Update garantiert die neue Datei und nicht die alte
 // HTTP-Cache-Version.
-const MODULE_VERSION = "20261105e";
+const MODULE_VERSION = "20261105f";
 
 /* ---------------- MODE SWITCH ---------------- */
 
@@ -108,6 +108,39 @@ window.addEventListener("DOMContentLoaded", async () => {
   warmUpSmartModel();
 });
 
+/* ---------------- ANSWER INPUT ---------------- */
+
+// Nach der Auswertung wird das Eingabefeld durch unveränderbaren
+// Text ersetzt. Der eingegebene Wert bleibt dabei sichtbar.
+function freezeAnswerInput() {
+  const input = document.getElementById("userAnswer");
+  const staticAnswer = document.getElementById("userAnswerStatic");
+
+  if (!input || !staticAnswer) return;
+
+  staticAnswer.textContent = input.value;
+  staticAnswer.hidden = false;
+
+  input.hidden = true;
+  input.disabled = true;
+}
+
+// Bei der nächsten Karte wieder ein normales, leeres Eingabefeld
+// anzeigen.
+function resetAnswerInput() {
+  const input = document.getElementById("userAnswer");
+  const staticAnswer = document.getElementById("userAnswerStatic");
+
+  if (!input || !staticAnswer) return;
+
+  input.hidden = false;
+  input.disabled = false;
+  input.value = "";
+
+  staticAnswer.hidden = true;
+  staticAnswer.textContent = "";
+}
+
 /* ---------------- NEXT CARD ---------------- */
 
 function nextCard() {
@@ -137,6 +170,7 @@ function nextCard() {
 
     const question = document.getElementById("question");
     const input = document.getElementById("userAnswer");
+    const staticAnswer = document.getElementById("userAnswerStatic");
     const confidence = document.getElementById("confidenceBox");
     const evaluation = document.getElementById("evaluation");
     const compareModeBtns = document.getElementById("compareModeBtns");
@@ -146,6 +180,7 @@ function nextCard() {
     if (question) question.textContent = "Alle Karten geschafft 🎉";
 
     if (input) input.style.display = "none";
+    if (staticAnswer) staticAnswer.hidden = true;
     if (confidence) confidence.style.display = "none";
     if (evaluation) evaluation.style.display = "none";
     if (compareModeBtns) compareModeBtns.style.display = "none";
@@ -188,8 +223,7 @@ function nextCard() {
 
   /* ---------- INPUT RESET ---------- */
 
-  const input = document.getElementById("userAnswer");
-  if (input) input.value = "";
+  resetAnswerInput();
 
   /* ---------- REVERSE UI ---------- */
 
@@ -354,6 +388,9 @@ document.querySelectorAll("[data-level]").forEach(btn => {
     }
 
     if (failed) return;
+
+    // Lösung wird angezeigt: Eingabefeld zu statischem Text machen.
+    freezeAnswerInput();
 
     const confidenceBox = document.getElementById("confidenceBox");
     if (confidenceBox) confidenceBox.style.display = "none";

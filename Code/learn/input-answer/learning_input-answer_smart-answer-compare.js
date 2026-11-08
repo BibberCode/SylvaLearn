@@ -6,7 +6,7 @@ import {
   normalizeForEmbedding,
   normalizeForMatch,
   splitAlternatives,
-} from "./smart-compare-core.js?v=20261105e";
+} from "./smart-compare-core.js?v=20261105f";
 
 import { rightAnswerAll, wrongAnswerAll } from "../../stats/avarageCardsAll.js";
 import { rightAnswerAlone, wrongAnswerAlone } from "../../stats/avarageCardsAlone.js";

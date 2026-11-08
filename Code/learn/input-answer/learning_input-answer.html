@@ -14,6 +14,79 @@
 
   <!-- CSS FIX -->
   <link rel="stylesheet" href="../../home/frontend/style.css">
+
+  <style>
+    /* Nach der Auswertung wird das Eingabefeld durch statischen Text ersetzt. */
+    #userAnswerStatic {
+      flex: 1;
+      width: 100%;
+      padding: 18px 20px;
+      border: 2px solid transparent;
+      border-radius: 22px;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      background: transparent;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #userAnswerStatic[hidden],
+    #userAnswer[hidden] {
+      display: none;
+    }
+
+    #mistakeActions {
+      margin-top: 10px;
+    }
+
+    #mistakeActions[hidden] {
+      display: none;
+    }
+
+    #showMistakesBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border: 1px solid var(--evaluation-border, #dbe5de);
+      border-radius: 999px;
+      background: var(--small-card-bg, #fff);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition, 0.2s), border-color var(--transition, 0.2s);
+    }
+
+    #showMistakesBtn:hover {
+      border-color: rgba(209, 26, 42, 0.35);
+      background: rgba(209, 26, 42, 0.06);
+    }
+
+    #userAnswerStatic .wrong-letter {
+      color: #d11a2a;
+      background: rgba(209, 26, 42, 0.12);
+      border-radius: 3px;
+      padding: 0 1px;
+      font-weight: 700;
+    }
+
+    #userAnswerStatic .missing-letter {
+      color: #d11a2a;
+      font-weight: 800;
+      opacity: 0.75;
+    }
+
+    [data-theme="dark"] #userAnswerStatic .wrong-letter {
+      color: #ff7b7b;
+      background: rgba(255, 123, 123, 0.16);
+    }
+
+    [data-theme="dark"] #userAnswerStatic .missing-letter {
+      color: #ff7b7b;
+    }
+  </style>
 </head>
 
 <body>
@@ -56,6 +129,8 @@
 
       <input id="userAnswer" placeholder="Deine Antwort" style="flex: 1;">
 
+      <div id="userAnswerStatic" hidden aria-label="Deine Antwort"></div>
+
       <div id="compareModeBtns" class="mode-switch" style="display: flex; gap: 5px">
         <button class="mode" id="smartBtn">
           Smart
@@ -69,6 +144,17 @@
     </div>
 
     <h5 id="evaluation" style="display:none; margin-top:15px; margin-bottom: 1px;"></h5>
+
+    <div id="mistakeActions" hidden>
+      <button
+        id="showMistakesBtn"
+        type="button"
+        aria-expanded="false"
+        title="Falsche Buchstaben deiner Antwort rot markieren"
+      >
+        Fehler anzeigen
+      </button>
+    </div>
   </div>
 
   <!-- CONFIDENCE -->
@@ -107,7 +193,7 @@
 <script src="../../../app.js" defer></script>
 
 <!-- Versions-Query: erzwingt nach Updates frische ES-Module statt alter HTTP-Caches. -->
-<script type="module" src="./answer-compare-mode-controller.js?v=20261105e" defer></script>
+<script type="module" src="./answer-compare-mode-controller.js?v=20261105f" defer></script>
 <script src="../../home/frontend/countingTime.js" defer></script>
 
 </body>
